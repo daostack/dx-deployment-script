@@ -9,6 +9,7 @@ before_install:
 
 install:
   - npm install
+  - npm run build
   - nohup npm start ganache &
   - npm run migrateContracts
 
