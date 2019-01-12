@@ -10,7 +10,7 @@ before_install:
 install:
   - npm install
   - nohup npm start ganache &
-  - npm start migrateContracts
+  - npm run migrateContracts
 
 script:
   - npm run script daoCreateaoDutchX
