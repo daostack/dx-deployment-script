@@ -1,6 +1,7 @@
 build
 .vscode
 local_scripts
+providers
 *.ps1
 
 # Logs
