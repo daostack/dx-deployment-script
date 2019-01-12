@@ -7,7 +7,6 @@ import {
   InitializeArcJs,
   LockingEth4ReputationFactory,
   LockingToken4ReputationFactory,
-  // FixedReputationAllocationFactory,
   Utils,
   Web3
 } from "@daostack/arc.js";
@@ -93,6 +92,10 @@ export const run = async (web3: Web3, networkName: string): Promise<void> => {
        * This is just one they recently deployed.  It changes with each new DAO.  getPrice currently returns all zeros, need to find a better one
        */
       priceOracleInterfaceAddress = "0x1C54f6146bA3656739A5c0781Cc054FA0C3951C1";
+
+      /**
+       * TODO: use mock instead of hardwired above
+       */
       // priceOracleInterfaceMock =
       //   await contractNew(web3, networkName, { name: "PriceOracleMock" }, "max", "50000000000") as any;
 
@@ -135,41 +138,6 @@ export const run = async (web3: Web3, networkName: string): Promise<void> => {
     ]];
 
   const dao = (await daoCreate(web3, networkName, daoSchema, "true")) as DAO;
-
-// tslint:disable: variable-name
-
-  // final official dates:
-  // "lockingPeriodStartDate": "2019-02-18T12:00:00.000",
-  // "lockingPeriodEndDate": "2019-03-20T12:00:00.000",
-
-// model dates:
-  // const lockingPeriodStartDate = new Date("2019-01-09T12:00:00.000+0200");
-  // const lockingPeriodEndDate   = new Date("2019-01-10T12:00:00.000+0200");
-  // const lockingPeriodStartDate_mgn = new Date("2019-01-10T11:00:00.000+0200");
-  // const lockingPeriodEndDate_mgn   = new Date("2019-01-10T12:00:00.000+0200");
-  // const NUM_AUCTIONS = 6;
-  // const MAX_LOCK_PERIOD = 43200; // 12 hours in seconds
-  // const TOTAL_REP_REWARD = 100000000;
-
-// model II:
-  // const lockingPeriodStartDate      = new Date("2019-01-09T12:00:00.000+0200");
-  // const lockingPeriodEndDate        = new Date("2019-01-09T17:00:00.000+0200");
-  // const lockingPeriodStartDate_mgn  = new Date("2019-01-09T16:00:00.000+0200");
-  // const lockingPeriodEndDate_mgn    = new Date("2019-01-09T17:00:00.000+0200");
-  // const NUM_AUCTIONS = 5;
-  // const MAX_LOCK_PERIOD = 10800; // 3 hours in seconds
-  // const TOTAL_REP_REWARD = 100000000;
-
-// alex:
-  // const lockingPeriodStartDate = new Date("2019-01-09T12:00:00.000+0200");
-  // const lockingPeriodEndDate   = new Date("2019-01-10T12:00:00.000+0200");
-  // const lockingPeriodStartDate_mgn = new Date("2019-01-10T11:00:00.000+0200");
-  // const lockingPeriodEndDate_mgn   = new Date("2019-01-10T12:00:00.000+0200");
-  // const NUM_AUCTIONS = 6;
-  // const MAX_LOCK_PERIOD = 43200; // 12 hours in seconds
-  // const TOTAL_REP_REWARD = 100000000;
-
-//  const MAX_LOCK_PERIOD = 31536000; // one year (365 days) in seconds
 
   const lockingPeriodStartDate      = new Date("2019-01-09T12:00:00.000+0200");
   const lockingPeriodEndDate        = new Date("2019-06-09T17:00:00.000+0200");
