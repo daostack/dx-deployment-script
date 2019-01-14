@@ -139,22 +139,30 @@ export const run = async (web3: Web3, networkName: string): Promise<void> => {
 
   const dao = (await daoCreate(web3, networkName, daoSchema, "true")) as DAO;
 
-  const lockingPeriodStartDate      = new Date("2019-01-09T12:00:00.000+0200");
-  const lockingPeriodEndDate        = new Date("2019-06-09T17:00:00.000+0200");
-  const lockingPeriodStartDate_mgn  = new Date("2019-01-09T16:00:00.000+0200");
-  const lockingPeriodEndDate_mgn    = new Date("2019-06-09T17:00:00.000+0200");
-
+  /**********************
+   !!!! Start and end dates should be such that they can be divided evenly by (NUM_AUCTIONS / 1000)
+   **********************/
+  const lockingPeriodStartDate      = new Date("2019-01-15T15:00:00.000+0200");
+  const lockingPeriodEndDate        = new Date("2019-01-15T17:00:00.000+0200");
+  const lockingPeriodStartDate_mgn  = new Date("2019-01-15T16:30:00.000+0200");
+  const lockingPeriodEndDate_mgn    = new Date("2019-01-15T17:00:00.000+0200");
+  /**********************
+   !!!! Should be a number of auctions such that the sum of auction rep comes out to exactly TOTAL_REP_REWARD * AUCTION_BIDDING_RATIO
+   **********************/
   const NUM_AUCTIONS = 5;
-  // note this may not come out even with the endDate
+  const MAX_LOCK_PERIOD = 7200; // 2 hours in seconds, use 31536000 for one year
+  /**********************
+   !!!! Should be an amount that yields a whole number when multiplied by any of the ratios below
+   **********************/
+  const TOTAL_REP_REWARD = 1000000000;
+  const AUCTION_BIDDING_RATIO = .1;    // 100000000 ( should be divided evenly by NUM_AUCTIONS )
+  const TOKEN_LOCKING_RATIO = .3;      // 300000000 
+  const ETH_LOCKING_RATIO = .08;       //  80000000
+  const EXTERNAL_LOCKING_RATIO = .5;   // 500000000
+          /* potentially other: */     //  20000000
+
   const AUCTION_PERIOD = ((lockingPeriodEndDate.getTime() - lockingPeriodStartDate.getTime()) / NUM_AUCTIONS) / 1000;
   const REDEEM_ENABLE_DATE = lockingPeriodEndDate;
-  const MAX_LOCK_PERIOD = 10800; // 3 hours in seconds
-
-  const TOTAL_REP_REWARD = 1000000000;
-  const AUCTION_BIDDING_RATIO = .1;
-  const TOKEN_LOCKING_RATIO = .3;
-  const ETH_LOCKING_RATIO = .08;
-  const EXTERNAL_LOCKING_RATIO = .5;
 
   console.log(`lockingPeriodStartDate: ${lockingPeriodStartDate.toString()}`);
   console.log(`lockingPeriodEndDate: ${lockingPeriodEndDate.toString()}`);
