@@ -31,7 +31,11 @@ Provide a nmemonic and url:
 npm run script -- -n "file turkey house..." -u "https://kovan.infura.io/..." daoCreateDutchX
 ```
 
-## Help
+### Nonce Errors Using Infura
+
+If you are using Infura and are experiencing "nonce too low" errors, then let the script know you are using Infura by either naming the network "kovan" in a providerConfig JSON file, or by supplying the --i option on the command line.
+
+### Help
 
 After running `npm run build`, run:
 

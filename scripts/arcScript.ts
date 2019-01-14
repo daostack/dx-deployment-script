@@ -6,7 +6,6 @@ import { Web3 } from "web3";
 const path = require("path");
 const fs = require("fs-extra");
 const commandLineArgs = require("command-line-args");
-const validUrl = require("valid-url");
 const commandLineUsage = require("command-line-usage");
 
 class FileDetails {
@@ -25,6 +24,7 @@ const optionDefinitions = [
   { name: "help", alias: "h", type: Boolean, description: "show these command line options" },
   { name: "script", multiple: true, defaultOption: true, type: String, description: "(required) path to javascript script file, either absolute or relative to 'build' (or to 'build/scripts' if you are compiling folders in addition to the scripts folder)" },
   { name: "method", alias: "m", type: String, description: "name of the method to execute, default: \"run\"" },
+  { name: "isInfura", alias: "i", type: Boolean, description: "set if this is infura (not needed if you have set the name in a prodiver json config)" },
   { name: "providerConfig", alias: "c", type: providerConfig => new FileDetails(providerConfig), description: "absolute path to a JSON file specifying a mnemonic and url (including port)" },
   { name: "url", alias: "u", type: String, description: "url when not using providerConfig, default: 'http://127.0.0.1'" },
   { name: "port", alias: "p", type: Number, description: "port when not using providerConfig, default: 8545" },
@@ -130,7 +130,7 @@ const connectToNetwork = async (): Promise<void> => {
   console.log(`Provider: '${providerConfig.providerUrl}'`);
   console.log(`Account: '${providerConfig.mnemonic}'`);
   provider = new HDWalletProvider(providerConfig.mnemonic, providerConfig.providerUrl);
-  if (providerConfig.name && (providerConfig.name.toLowerCase() === "infura")) {
+  if (options.isInfura || (providerConfig && providerConfig.name && (providerConfig.name.toLowerCase() === "infura"))) {
     console.log("applying NonceTrackerSubprovider");
     // see https://ethereum.stackexchange.com/a/50038/21913
     const nonceTracker = new NonceTrackerSubprovider();
