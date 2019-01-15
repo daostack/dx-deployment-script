@@ -155,11 +155,11 @@ export const run = async (web3: Web3, networkName: string): Promise<void> => {
    !!!! Should be an amount that yields a whole number when multiplied by any of the ratios below
    **********************/
   const TOTAL_REP_REWARD = 1000000;
-  const AUCTION_BIDDING_RATIO = .1;    // 10000000 ( should be divided evenly by NUM_AUCTIONS )
-  const TOKEN_LOCKING_RATIO = .3;      // 30000000 
-  const ETH_LOCKING_RATIO = .08;       //  8000000
-  const EXTERNAL_LOCKING_RATIO = .5;   // 50000000
-          /* potentially other: */     //  2000000
+  const AUCTION_BIDDING_RATIO = .1;    // 100000 ( should be divided evenly by NUM_AUCTIONS )
+  const TOKEN_LOCKING_RATIO = .3;      // 300000 
+  const ETH_LOCKING_RATIO = .08;       //  80000
+  const EXTERNAL_LOCKING_RATIO = .5;   // 500000
+          /* potentially other: */     //  20000
 
   const AUCTION_PERIOD = ((lockingPeriodEndDate.getTime() - lockingPeriodStartDate.getTime()) / NUM_AUCTIONS) / 1000;
   const REDEEM_ENABLE_DATE = lockingPeriodEndDate;
