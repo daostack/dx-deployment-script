@@ -69,6 +69,7 @@ export const run = async (
 
   console.log(`new DAO created at: ${dao.avatar.address}`);
   console.log(`native token: ${dao.token.address}`);
+  console.log(`reputation: ${dao.reputation.address}`);
 
   return Promise.resolve(dao);
 };
