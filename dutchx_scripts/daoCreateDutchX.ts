@@ -154,7 +154,7 @@ export const run = async (web3: Web3, networkName: string): Promise<void> => {
   /**********************
    !!!! Should be an amount that yields a whole number when multiplied by any of the ratios below
    **********************/
-  const TOTAL_REP_REWARD = 100000000;
+  const TOTAL_REP_REWARD = 1000000;
   const AUCTION_BIDDING_RATIO = .1;    // 10000000 ( should be divided evenly by NUM_AUCTIONS )
   const TOKEN_LOCKING_RATIO = .3;      // 30000000 
   const ETH_LOCKING_RATIO = .08;       //  8000000
