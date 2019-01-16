@@ -15,6 +15,3 @@ install:
 
 script:
   - npm run script daoCreateaoDutchX
-
-notifications:
-  slack: daostack:fGuaFPsiQiV5mgmzRcSzbYqw
