@@ -3,6 +3,7 @@ build
 local_scripts
 providers
 *.ps1
+configurations
 
 # Logs
 logs
