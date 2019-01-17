@@ -121,7 +121,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
       } else {
         address = lockSpec.account;
       }
-      await externalLockerMock.lock(lockSpec.amount, { from: address });
+      await externalLockerMock.lock(web3.toWei(lockSpec.amount), { from: address });
     }
   } else {
     externalLockerAddress = externalLockerConfig.address;
