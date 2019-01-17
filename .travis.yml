@@ -15,4 +15,4 @@ install:
   - npm run migrateContracts
 
 script:
-  - npm run script daoCreateDutchX ../../dutchx_scripts/travis-test-config.json
+  - npm run script daoCreateDutchX ../../dutchx_scripts/configurations/travis-test-config.json

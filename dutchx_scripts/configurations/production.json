@@ -1,0 +1,53 @@
+{
+  "daoConfig": {
+    "name": "dxDAO",
+    "tokenName": "dxToken",
+    "tokenSymbol": "DUX",
+    "founders": [
+      {
+        "address": "0x0BDFC610EfFc3aAFc332343fd9b48Def45A83e29",
+        "tokens": 0,
+        "reputation": 0
+      }
+    ]
+  },
+  "lockingPeriodStartDate":     "2019-02-18T12:00:00.000+0200",
+  "lockingPeriodEndDate":       "2019-03-20T12:00:00.000+0200",
+  "lockingPeriodStartDateMgn":  "2019-03-20T11:00:00.000+0200",
+  "lockingPeriodEndDateMgn":    "2019-03-20T12:00:00.000+0200",
+  "totalRepReward": 1000000,
+  "estimateGas": true,
+  "schemeParameters": {
+    "LockingEth4Reputation": {
+      "gas": "max",
+      "gasPrice": 50000000000,
+      "lockingRatio": 0.08,
+      "maxLockingPeriod": 31536000
+    },
+    "LockingToken4Reputation": {
+      "gas": "max",
+      "gasPrice": 50000000000,
+      "lockingRatio": 0.3,
+      "maxLockingPeriod": 31536000,
+      "priceOracle": {
+        "address": ""
+        }
+      }
+    },
+    "ExternalLocking4Reputation": {
+      "gas": "max",
+      "gasPrice": 50000000000,
+      "lockingRatio": 0.5,
+      "externalLocker": {
+        "address": ""
+        }
+      }
+    },
+    "Auction4Reputation": {
+      "gas": "max",
+      "gasPrice": 50000000000,
+      "lockingRatio": 0.1,
+      "numAuctions": 5
+    }
+  }
+}

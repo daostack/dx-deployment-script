@@ -53,30 +53,32 @@ export const run = async (
   const params = spec.constructorParams || [];
   const web3Params = {} as any;
 
-  if (gas) {
-    if (gas === 'max') {
-      gas = (await Common.computeMaxGasLimit(web3)).toString();
-    }
-    web3Params.gas = Number.parseInt(gas, 10);
+  if (!gas) {
+    throw new Error(`gas was not supplied`);
   }
 
-  if (gasPrice) {
-    if (gas === 'estimate') {
-      ConfigService.set('gasPriceAdjustment', async (defaultGasPrice: BigNumber) => {
-        try {
-          const response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json');
-          // the api gives results if 10*Gwei
-          const computedGasPrice = response.data.fast / 10;
-          return web3.toWei(computedGasPrice, 'gwei');
-        } catch (e) {
-          return defaultGasPrice;
-        }
-      });
-    } else {
-      web3Params.gasPrice = Number.parseInt(gasPrice, 10);
-    }
+  if (gas === 'max') {
+    gas = (await Common.computeMaxGasLimit(web3)).toString();
+  }
+  web3Params.gas = Number.parseInt(gas, 10);
+
+  if (!gasPrice) {
+    throw new Error(`gasPrice was not supplied`);
+  }
+
+  if (gasPrice === 'estimate') {
+    ConfigService.set('gasPriceAdjustment', async (defaultGasPrice: BigNumber) => {
+      try {
+        const response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json');
+        // the api gives results if 10*Gwei
+        const computedGasPrice = response.data.fast / 10;
+        return web3.toWei(computedGasPrice, 'gwei');
+      } catch (e) {
+        return defaultGasPrice;
+      }
+    });
   } else {
-    web3Params.gasPrice = 10000000000;
+    web3Params.gasPrice = Number.parseInt(gasPrice, 10);
   }
 
   params.push(web3Params);

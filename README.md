@@ -18,28 +18,28 @@ The script is "dutchx_scripts\daoCreateDutchX.ts".
 ```
 npm run ganache
 npm run migrateContracts
-npm run script daoCreateDutchX [full path to a config file]
+npm run script daoCreateDutchX [path to a config file]
 ```
 
-See "dutchx_scripts/example-config.json" on how to create a config file.
+See "dutchx_scripts/configurations/example-config.json" on how to create a config file.
 
 ### On Kovan or Rinkeby
 
 Provide a nmemonic and url:
 
 ```
-npm run script -- -n "file turkey house..." -u "https://kovan.infura.io/..." daoCreateDutchX  [full path to a config file]
+npm run script -- -n "file turkey house..." -u "https://kovan.infura.io/..." daoCreateDutchX  [path to a config file]
 ```
-See "dutchx_scripts/example-config.json" on how to create a config file.
+See "dutchx_scripts/configurations/example-config.json" on how to create a config file.
 
-## Troubleshooting
+### Troubleshooting
 
-### Nothing Happens
+#### Nothing Happens
 
 If the script returns without executing your script, make sure that a node is listening on the url you
 provided in your provider configuration file.
 
-### Nonce Errors Using Infura
+#### Nonce Errors Using Infura
 
 If you are using Infura and are experiencing "nonce too low" errors, then let the script know you are using Infura by either naming the network "kovan" in a providerConfig JSON file, or by supplying the `--i` option on the command line.
 
