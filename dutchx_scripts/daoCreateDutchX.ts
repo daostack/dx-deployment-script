@@ -9,11 +9,11 @@ import {
   LockingToken4ReputationFactory,
   Utils,
   Web3
-} from "@daostack/arc.js";
+} from '@daostack/arc.js';
 
-import { run as contractNew } from "../scripts/contractNew";
-import { run as daoCreate } from "../scripts/daoCreate";
-import { run as tokenMint } from "../scripts/tokenMint";
+import { run as contractNew } from '../scripts/contractNew';
+import { run as daoCreate } from '../scripts/daoCreate';
+import { run as tokenMint } from '../scripts/tokenMint';
 
 // tslint:disable: max-line-length
 
@@ -32,35 +32,35 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
     filter: {},
   });
 
-  ConfigService.set("estimateGas", config.estimateGas);
+  ConfigService.set('estimateGas', config.estimateGas);
 
   const lockingEth4Reputation =
     await LockingEth4ReputationFactory
-      .at((await contractNew(web3, networkName, 
-        { name: "LockingEth4Reputation" },
+      .at((await contractNew(web3, networkName,
+        { name: 'LockingEth4Reputation' },
         config.schemeParameters.LockingEth4Reputation.gas,
-        config.schemeParameters.LockingEth4Reputation.gasPrice) as Lock4ReputationContract).address);
-  
+        config.schemeParameters.LockingEth4Reputation.gasPrice) as ILock4ReputationContract).address);
+
   const lockingToken4Reputation =
     await LockingToken4ReputationFactory
-      .at((await contractNew(web3, networkName, 
-        { name: "LockingToken4Reputation" },
+      .at((await contractNew(web3, networkName,
+        { name: 'LockingToken4Reputation' },
         config.schemeParameters.LockingToken4Reputation.gas,
-        config.schemeParameters.LockingToken4Reputation.gasPrice) as Lock4ReputationContract).address);
-  
+        config.schemeParameters.LockingToken4Reputation.gasPrice) as ILock4ReputationContract).address);
+
   const externalLocking4Reputation =
     await ExternalLocking4ReputationFactory
-      .at((await contractNew(web3, networkName, 
-        { name: "ExternalLocking4Reputation" },
+      .at((await contractNew(web3, networkName,
+        { name: 'ExternalLocking4Reputation' },
         config.schemeParameters.ExternalLocking4Reputation.gas,
-        config.schemeParameters.ExternalLocking4Reputation.gasPrice) as Lock4ReputationContract).address);
-  
+        config.schemeParameters.ExternalLocking4Reputation.gasPrice) as ILock4ReputationContract).address);
+
   const auction4Reputation =
     await Auction4ReputationFactory
-      .at((await contractNew(web3, networkName, 
-        { name: "Auction4Reputation" },
+      .at((await contractNew(web3, networkName,
+        { name: 'Auction4Reputation' },
         config.schemeParameters.Auction4Reputation.gas,
-        config.schemeParameters.Auction4Reputation.gasPrice) as Lock4ReputationContract).address);
+        config.schemeParameters.Auction4Reputation.gasPrice) as ILock4ReputationContract).address);
 
   /**
    * Arc.js gets GEN addresses from the DAOstack migration repo
@@ -74,24 +74,24 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
   const priceOracleConfig = config.schemeParameters.LockingToken4Reputation.priceOracle;
   let priceOracleAddress: Address;
 
-  if (priceOracleConfig.address === "useMock") {
-    
+  if (priceOracleConfig.address === 'useMock') {
+
     const mockConfig = priceOracleConfig.mock;
 
     const priceOracleMock:
       { setTokenPrice: (address: Address, numerator: number, denominator: number) => Promise<void>, address: Address } =
-        await contractNew(web3, networkName, { name: "PriceOracleMock" },
-          mockConfig.gas,
-          mockConfig.gasPrice
-        ) as any;
+      await contractNew(web3, networkName, { name: 'PriceOracleMock' },
+        mockConfig.gas,
+        mockConfig.gasPrice
+      ) as any;
 
     priceOracleAddress = priceOracleMock.address;
 
     for (const tokenSpec of mockConfig.tokens) {
-      const address = tokenSpec.address === "GEN" ? genTokenAddress : tokenSpec.address;
+      const address = tokenSpec.address === 'GEN' ? genTokenAddress : tokenSpec.address;
       await priceOracleMock.setTokenPrice(address, tokenSpec.numerator, tokenSpec.denominator);
     }
-  } else{
+  } else {
     priceOracleAddress = priceOracleConfig.address;
   }
 
@@ -101,29 +101,29 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
   const externalLockerConfig = config.schemeParameters.ExternalLocking4Reputation.externalLocker;
   let externalLockerAddress: Address;
 
-  if (externalLockerConfig.address === "useMock") {
-    
+  if (externalLockerConfig.address === 'useMock') {
+
     const mockConfig = externalLockerConfig.mock;
 
     const externalLockerMock:
       { lock: (amount: string, options: { from: Address }) => Promise<void>, address: Address } =
-        await contractNew(web3, networkName, { name: "ExternalTokenLockerMock" },
-          mockConfig.gas,
-          mockConfig.gasPrice
-        ) as any;
+      await contractNew(web3, networkName, { name: 'ExternalTokenLockerMock' },
+        mockConfig.gas,
+        mockConfig.gasPrice
+      ) as any;
 
     externalLockerAddress = externalLockerMock.address;
 
     for (const lockSpec of mockConfig.locks) {
-      let address:Address;
-      if (!lockSpec.account.startsWith("0x")) {
-        address = accounts[lockSpec.account]
+      let address: Address;
+      if (!lockSpec.account.startsWith('0x')) {
+        address = accounts[lockSpec.account];
       } else {
         address = lockSpec.account;
       }
-      await externalLockerMock.lock(lockSpec.amount, { from: address});
+      await externalLockerMock.lock(lockSpec.amount, { from: address });
     }
-  } else{
+  } else {
     externalLockerAddress = externalLockerConfig.address;
   }
 
@@ -131,36 +131,36 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
    * Create the DAO
    */
   const daoConfig = config.daoConfig;
-  
+
   daoConfig.schemes = [...(daoConfig.schemes || []), ...
     [
       {
         address: lockingEth4Reputation.address,
-        name: "LockingEth4Reputation",
+        name: 'LockingEth4Reputation',
       },
       {
         address: externalLocking4Reputation.address,
-        name: "ExternalLocking4Reputation",
+        name: 'ExternalLocking4Reputation',
       },
       {
         address: lockingToken4Reputation.address,
-        name: "LockingToken4Reputation",
+        name: 'LockingToken4Reputation',
       },
       {
         address: auction4Reputation.address,
-        name: "Auction4Reputation",
+        name: 'Auction4Reputation',
       },
     ]];
 
-  const dao = (await daoCreate(web3, networkName, daoConfig, "true")) as DAO;
+  const dao = (await daoCreate(web3, networkName, daoConfig, 'true')) as DAO;
 
   /**********************
    !!!! Start and end dates should be such that they can be divided evenly by (NUM_AUCTIONS / 1000)
    **********************/
-  const LOCK_PERIOD_START_DATE          = new Date(config.lockingPeriodStartDate);
-  const LOCKING_PERIOD_END_DATE         = new Date(config.lockingPeriodEndDate);
-  const LOCKING_PERIOD_START_DATE_MGN   = new Date(config.lockingPeriodStartDateMgn);
-  const LOCKING_PERIOD_END_DATE_MGN     = new Date(config.lockingPeriodEndDateMgn);
+  const LOCK_PERIOD_START_DATE = new Date(config.lockingPeriodStartDate);
+  const LOCKING_PERIOD_END_DATE = new Date(config.lockingPeriodEndDate);
+  const LOCKING_PERIOD_START_DATE_MGN = new Date(config.lockingPeriodStartDateMgn);
+  const LOCKING_PERIOD_END_DATE_MGN = new Date(config.lockingPeriodEndDateMgn);
   /**********************
    !!!! Should be a number of auctions such that the sum of auction rep comes out to exactly TOTAL_REP_REWARD * AUCTION_BIDDING_RATIO
    **********************/
@@ -172,7 +172,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
   const AUCTION_PERIOD = ((LOCKING_PERIOD_END_DATE.getTime() - LOCK_PERIOD_START_DATE.getTime()) / NUM_AUCTIONS) / 1000;
   const REDEEM_ENABLE_DATE = LOCKING_PERIOD_END_DATE;
 
-  let schemeConfig = config.schemeParameters["LockingEth4Reputation"];
+  let schemeConfig = config.schemeParameters.LockingEth4Reputation;
 
   await lockingEth4Reputation.initialize(
     {
@@ -185,13 +185,13 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
     }
   );
 
-  schemeConfig = config.schemeParameters["ExternalLocking4Reputation"];
+  schemeConfig = config.schemeParameters.ExternalLocking4Reputation;
 
   await externalLocking4Reputation.initialize(
     {
       avatarAddress: dao.avatar.address,
       externalLockingContract: externalLockerAddress,
-      getBalanceFuncSignature: "lockedTokenBalances(address)",
+      getBalanceFuncSignature: 'lockedTokenBalances(address)',
       lockingEndTime: LOCKING_PERIOD_END_DATE_MGN,
       lockingStartTime: LOCKING_PERIOD_START_DATE_MGN,
       redeemEnableTime: REDEEM_ENABLE_DATE,
@@ -199,7 +199,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
     }
   );
 
-  schemeConfig = config.schemeParameters["LockingToken4Reputation"];
+  schemeConfig = config.schemeParameters.LockingToken4Reputation;
 
   await lockingToken4Reputation.initialize(
     {
@@ -213,7 +213,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
     }
   );
 
-  schemeConfig = config.schemeParameters["Auction4Reputation"];
+  schemeConfig = config.schemeParameters.Auction4Reputation;
 
   await auction4Reputation.initialize(
     {
@@ -228,10 +228,10 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
     }
   );
 
-  if (networkName === "Ganache") {
-    await tokenMint(web3, networkName, genTokenAddress, "100", accounts[0]);
-    await tokenMint(web3, networkName, genTokenAddress, "100", accounts[1]);
-    await tokenMint(web3, networkName, genTokenAddress, "100", accounts[2]);
+  if (networkName === 'Ganache') {
+    await tokenMint(web3, networkName, genTokenAddress, '100', accounts[0]);
+    await tokenMint(web3, networkName, genTokenAddress, '100', accounts[1]);
+    await tokenMint(web3, networkName, genTokenAddress, '100', accounts[2]);
   }
 
   console.log(`lockingPeriodStartDate: ${LOCK_PERIOD_START_DATE.toString()}`);
@@ -240,4 +240,4 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
   return Promise.resolve();
 };
 
-interface Lock4ReputationContract { address: Address; initialize: (...params) => Promise<any>; }
+interface ILock4ReputationContract { address: Address; initialize: (...params) => Promise<any>; }

@@ -8,7 +8,7 @@ export class Common {
 
   public static computeMaxGasLimit(web3): Promise<number> {
 
-    return promisify((callback) => web3.eth.getBlock("latest", false, callback))()
+    return promisify((callback) => web3.eth.getBlock('latest', false, callback))()
       .then((block) => {
         return block.gasLimit - 100000;
       });

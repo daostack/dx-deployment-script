@@ -1,24 +1,24 @@
 import {
   Address,
+  ConfigService,
   InitializeArcJs,
   LoggingService,
   LogLevel,
-  ConfigService,
-  Web3,
-  Utils
-} from "@daostack/arc.js";
+  Utils,
+  Web3
+} from '@daostack/arc.js';
 import { BigNumber } from 'bignumber.js';
 
 /**
  * Mint tokens.  'amount' will be converted to Wei.
  * If 'onBehalfOf' is not supplied, then will be set to account[0].
  * In the end, 'onBehalfOf' must be the owner of the token.
- * @param web3 
- * @param networkName 
- * @param tokenAddress 
- * @param amount 
- * @param to 
- * @param onBehalfOf 
+ * @param web3
+ * @param networkName
+ * @param tokenAddress
+ * @param amount
+ * @param to
+ * @param onBehalfOf
  */
 export const run = async (
   web3: Web3,
@@ -29,11 +29,11 @@ export const run = async (
   onBehalfOf?: Address): Promise<void> => {
 
   if (!tokenAddress) {
-    return Promise.reject("tokenAddress was not supplied")
+    return Promise.reject('tokenAddress was not supplied');
   }
 
   if (!to) {
-    return Promise.reject("to was not supplied")
+    return Promise.reject('to was not supplied');
   }
 
   if (!onBehalfOf) {
@@ -43,14 +43,14 @@ export const run = async (
   const amountBn = new BigNumber(web3.toWei(amount));
 
   if (amountBn.lte(0)) {
-    return Promise.reject("amount must be given and greater than zero")
+    return Promise.reject('amount must be given and greater than zero');
   }
 
   console.log(`minting token ${tokenAddress}`);
   console.log(`${amount.toString()} tokens to ${to} on behalf of ${onBehalfOf}...`);
 
   // TODO:  use arc.js wrapper once available
-  const token = (await Utils.requireContract("DAOToken")).at(tokenAddress);
+  const token = (await Utils.requireContract('DAOToken')).at(tokenAddress);
 
   // const supply = await token.totalSupply();
 
@@ -67,4 +67,4 @@ export const run = async (
   console.log(`txHash: ${tx.tx}`);
 
   return Promise.resolve();
-}
+};

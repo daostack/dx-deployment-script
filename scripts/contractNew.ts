@@ -1,18 +1,18 @@
-import { promisify } from 'es6-promisify';
 import {
-  Web3,
-  Utils,
   Address,
-  ConfigService
-} from "@daostack/arc.js";
+  ConfigService,
+  Utils,
+  Web3
+} from '@daostack/arc.js';
+import axios from 'axios';
+import { BigNumber } from 'bignumber.js';
+import { promisify } from 'es6-promisify';
 import { Common } from './common';
-import { BigNumber } from "bignumber.js";
-import axios from "axios";
 
 /**
- * Instantiate a contract given the json specification for it. 
+ * Instantiate a contract given the json specification for it.
  * Logs the resulting address to the console.
- * 
+ *
  * The spec should look like this
  * ```
  * {
@@ -21,12 +21,12 @@ import axios from "axios";
  *   initializeParams: []
  * }
  * ```
- * 
+ *
  * `constructorParams` can be omitted if there are no params
  * `initializeParams` is only for contracts that have an `initialize` method after being constructed
- * 
- * @param web3 
- * @param networkName 
+ *
+ * @param web3
+ * @param networkName
  * @param jsonSpec
  * @param gas optional gas amount.  if set to "max" then will use a high limit close to the current block limit
  * @param gasPrice optional gas price.  if set to "estimate" then will use a gas price obtained from ethgastation.
@@ -41,40 +41,39 @@ export const run = async (
 ): Promise<{ address: Address }> => {
 
   if (!jsonSpec) {
-    throw new Error("jsonSpec was not supplied");
+    throw new Error('jsonSpec was not supplied');
   }
 
-  const spec = (typeof (jsonSpec) === "object") ? jsonSpec : require(jsonSpec as string);
+  const spec = (typeof (jsonSpec) === 'object') ? jsonSpec : require(jsonSpec as string);
 
   if (!spec.name) {
-    throw new Error("contract name was not supplied");
+    throw new Error('contract name was not supplied');
   }
 
   const params = spec.constructorParams || [];
   const web3Params = {} as any;
 
   if (gas) {
-    if (gas === "max") {
+    if (gas === 'max') {
       gas = (await Common.computeMaxGasLimit(web3)).toString();
     }
-    web3Params.gas = Number.parseInt(gas);
+    web3Params.gas = Number.parseInt(gas, 10);
   }
 
   if (gasPrice) {
-    if (gas === "estimate") {
-          ConfigService.set("gasPriceAdjustment", async (defaultGasPrice: BigNumber) => {
-          try {
-            const response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json');
-            // the api gives results if 10*Gwei
-            const gasPrice = response.data.fast / 10;
-            return web3.toWei(gasPrice, 'gwei');
-          } catch (e) {
-            return defaultGasPrice;
-          }
-        });
-    }
-    else {
-      web3Params.gasPrice = Number.parseInt(gasPrice);
+    if (gas === 'estimate') {
+      ConfigService.set('gasPriceAdjustment', async (defaultGasPrice: BigNumber) => {
+        try {
+          const response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json');
+          // the api gives results if 10*Gwei
+          const computedGasPrice = response.data.fast / 10;
+          return web3.toWei(computedGasPrice, 'gwei');
+        } catch (e) {
+          return defaultGasPrice;
+        }
+      });
+    } else {
+      web3Params.gasPrice = Number.parseInt(gasPrice, 10);
     }
   } else {
     web3Params.gasPrice = 10000000000;
@@ -113,6 +112,5 @@ export const run = async (
     await newContract.initialize(...initializeParams);
   }
 
-
   return Promise.resolve(newContract);
-}
+};

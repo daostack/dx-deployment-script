@@ -1,12 +1,12 @@
 /* tslint:disable:no-console */
 /* tslint:disable:no-var-requires */
-import { ConfigService, Utils } from "@daostack/arc.js";
-import { promisify } from "es6-promisify";
-import { Web3 } from "web3";
-const path = require("path");
-const fs = require("fs-extra");
-const commandLineArgs = require("command-line-args");
-const commandLineUsage = require("command-line-usage");
+import { ConfigService, Utils } from '@daostack/arc.js';
+import { promisify } from 'es6-promisify';
+import { Web3 } from 'web3';
+const path = require('path');
+const fs = require('fs-extra');
+const commandLineArgs = require('command-line-args');
+const commandLineUsage = require('command-line-usage');
 
 class FileDetails {
   public filename: string;
@@ -21,29 +21,29 @@ class FileDetails {
 // tslint:disable: max-line-length
 
 const optionDefinitions = [
-  { name: "help", alias: "h", type: Boolean, description: "show these command line options" },
-  { name: "script", multiple: true, defaultOption: true, type: String, description: "(required) path to javascript script file, either absolute or relative to 'build' (or to 'build/scripts' if you are compiling folders in addition to the scripts folder)" },
-  { name: "method", alias: "m", type: String, description: "name of the method to execute, default: \"run\"" },
-  { name: "isInfura", alias: "i", type: Boolean, description: "set if this is infura (not needed if you have set the name in a prodiver json config)" },
-  { name: "providerConfig", alias: "c", type: providerConfig => new FileDetails(providerConfig), description: "absolute path to a JSON file specifying a mnemonic and url (including port)" },
-  { name: "url", alias: "u", type: String, description: "url when not using providerConfig, default: 'http://127.0.0.1'" },
-  { name: "port", alias: "p", type: Number, description: "port when not using providerConfig, default: 8545" },
-  { name: "mnemonic", alias: "n", type: String, description: "mnemonic like \"bird fish sheep ....\", when not using providerConfig" },
+  { name: 'help', alias: 'h', type: Boolean, description: 'show these command line options' },
+  { name: 'script', multiple: true, defaultOption: true, type: String, description: '(required) path to javascript script file, either absolute or relative to \'build\' (or to \'build/scripts\' if you are compiling folders in addition to the scripts folder)' },
+  { name: 'method', alias: 'm', type: String, description: 'name of the method to execute, default: "run"' },
+  { name: 'isInfura', alias: 'i', type: Boolean, description: 'set if this is infura (not needed if you have set the name in a prodiver json config)' },
+  { name: 'providerConfig', alias: 'c', type: (providerConfig) => new FileDetails(providerConfig), description: 'absolute path to a JSON file specifying a mnemonic and url (including port)' },
+  { name: 'url', alias: 'u', type: String, description: 'url when not using providerConfig, default: \'http://127.0.0.1\'' },
+  { name: 'port', alias: 'p', type: Number, description: 'port when not using providerConfig, default: 8545' },
+  { name: 'mnemonic', alias: 'n', type: String, description: 'mnemonic like "bird fish sheep ....", when not using providerConfig' },
 ];
 
-module.paths.push(path.join(__dirname, "../scripts"));
-module.paths.push(path.join(__dirname, "../dutchx_scripts"));
+module.paths.push(path.join(__dirname, '../scripts'));
+module.paths.push(path.join(__dirname, '../dutchx_scripts'));
 
 const options = commandLineArgs(optionDefinitions);
 
 const usage = (): void => {
   const sections = [
     {
-      content: "Run scripts agains DAOstack Arc.js.",
-      header: "arcScript",
+      content: 'Run scripts agains DAOstack Arc.js.',
+      header: 'arcScript',
     },
     {
-      header: "Options",
+      header: 'Options',
       optionList: optionDefinitions,
     },
   ];
@@ -113,25 +113,27 @@ const scriptPath = path.normalize(options.script[0]);
 const extraParameters = options.script.slice(1);
 
 if (!options.method) {
-  options.method = "run";
+  options.method = 'run';
 }
 
 const connectToNetwork = async (): Promise<void> => {
-  const webConstructor = require("web3");
+  const webConstructor = require('web3');
 
   const providerConfig = providerConfigPath ? require(providerConfigPath) :
-  {
-    mnemonic,
-    providerUrl: `${url || "http://127.0.0.1"}:${ port || "8545" }`,
-  };
+    {
+      mnemonic,
+      providerUrl: `${url || 'http://127.0.0.1'}:${port || '8545'}`,
+    };
 
-  const HDWalletProvider = require("truffle-hdwallet-provider");
-  const NonceTrackerSubprovider = require("web3-provider-engine/subproviders/nonce-tracker");
+  // tslint:disable-next-line: variable-name
+  const HdWalletProvider = require('truffle-hdwallet-provider');
+  // tslint:disable-next-line: variable-name
+  const NonceTrackerSubprovider = require('web3-provider-engine/subproviders/nonce-tracker');
   console.log(`Provider: '${providerConfig.providerUrl}'`);
   console.log(`Account: '${providerConfig.mnemonic}'`);
-  provider = new HDWalletProvider(providerConfig.mnemonic, providerConfig.providerUrl);
-  if (options.isInfura || (providerConfig && providerConfig.name && (providerConfig.name.toLowerCase() === "infura"))) {
-    console.log("applying NonceTrackerSubprovider");
+  provider = new HdWalletProvider(providerConfig.mnemonic, providerConfig.providerUrl);
+  if (options.isInfura || (providerConfig && providerConfig.name && (providerConfig.name.toLowerCase() === 'infura'))) {
+    console.log('applying NonceTrackerSubprovider');
     // see https://ethereum.stackexchange.com/a/50038/21913
     const nonceTracker = new NonceTrackerSubprovider();
     provider.engine._providers.unshift(nonceTracker);
@@ -148,16 +150,16 @@ try {
       await connectToNetwork();
     } else {
       if (url) {
-        const index = url.startsWith("http://") ? 7 : url.startsWith("https://") ? 8 : 0;
+        const index = url.startsWith('http://') ? 7 : url.startsWith('https://') ? 8 : 0;
 
         if (index) {
           url = url.slice(index);
         }
 
-        ConfigService.set("providerUrl", url); 
+        ConfigService.set('providerUrl', url);
       }
 
-      if (port) { ConfigService.set("providerPort", port); }
+      if (port) { ConfigService.set('providerPort', port); }
     }
 
     /**

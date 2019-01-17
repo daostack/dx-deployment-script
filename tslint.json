@@ -5,26 +5,28 @@
   ],
   "jsRules": {},
   "rules": {
-    "no-console": [
-      false
-    ],
-    "interface-name": [
-      false,
-      "always-prefix"
-    ],
-    "max-classes-per-file": [
-      false,
-      1
-    ],
     "indent": [
       true,
       "spaces",
       2
     ],
-    "no-unused-expression": [
+    "only-arrow-functions": false,
+    "no-var-requires": false,
+    "quotemark": [
       true,
-      "allow-fast-null-checks"
+      "single"
     ],
+    "array-type": [
+      true,
+      "generic"
+    ],
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-leading-underscore"
+    ],
+    "max-classes-per-file": false,
     "trailing-comma": [
       true,
       {
@@ -38,23 +40,7 @@
         "esSpecCompliant": true
       }
     ],
-    "array-type": [
-      true,
-      "generic"
-    ],
-    "no-misused-new": false,
-    "typedef": [
-      true,
-      "call-signature",
-      "arrow-call-signature",
-      "parameter",
-      "arrow-parameter",
-      "property-declaration",
-      "member-variable-declaration",
-      "object-destructuring",
-      "array-destructuring"
-    ],
-    "no-inferrable-types": false
+    "no-console": false
   },
   "rulesDirectory": []
 }

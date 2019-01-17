@@ -6,10 +6,10 @@ import {
   LogLevel,
   Utils,
   Web3
-} from "@daostack/arc.js";
+} from '@daostack/arc.js';
 import { Common } from './common';
 
-interface FounderSpec {
+interface IFounderSpec {
   /**
    * Founders' address
    */
@@ -37,25 +37,25 @@ export const run = async (
   web3: Web3,
   networkName: string,
   jsonSpecPath: string | object,
-  isRawJson: string = "false"): Promise<DAO> => {
+  isRawJson: string = 'false'): Promise<DAO> => {
 
   if (!jsonSpecPath) {
-    return Promise.reject("jsonSpecPath was not supplied");
+    return Promise.reject('jsonSpecPath was not supplied');
   }
 
   // tslint:disable-next-line: no-bitwise
   LoggingService.logLevel = LogLevel.info | LogLevel.error;
 
   await InitializeArcJs();
-  ConfigService.set("estimateGas", true);
+  ConfigService.set('estimateGas', true);
 
   const spec = Common.isTruthy(isRawJson) ? jsonSpecPath : require(jsonSpecPath as string);
 
   if (!spec.founders || !spec.founders.length) {
-    throw new Error("You must supply at least one founder");
+    throw new Error('You must supply at least one founder');
   }
 
-  spec.founders = spec.founders.map((f: FounderSpec) => {
+  spec.founders = spec.founders.map((f: IFounderSpec) => {
     return {
       address: f.address,
       reputation: web3.toWei(f.reputation),
