@@ -121,11 +121,11 @@
               /**
                 A number here will resolve to accounts[the number]
               */
-              "account": "0",
+              "account": 0,
               "amount": 100
             },
             {
-              "account": "1",
+              "account": 1,
               "amount": 100
             }
           ]
