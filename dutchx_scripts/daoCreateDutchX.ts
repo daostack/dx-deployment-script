@@ -19,9 +19,6 @@ import { run as tokenMint } from '../scripts/tokenMint';
 
 export const run = async (web3: Web3, networkName: string, configPath: string): Promise<void> => {
 
-  /**
-   * configPath must be a full path
-   */
   if (!configPath) {
     throw new Error('configPath was not provided');
   }

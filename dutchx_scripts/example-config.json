@@ -1,5 +1,5 @@
 /**
-  you must supply the full path to a file like this (without the comments),
+  you must supply the path to a file like this (without the comments),
   as the sole parameter to daoCreateDutchX script
 */
 {
