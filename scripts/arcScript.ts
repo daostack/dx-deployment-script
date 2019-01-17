@@ -53,7 +53,7 @@ const usage = (): void => {
 
 let provider;
 
-const exit = (code: number = 0): void => {
+const exit = (code: number): void => {
   if (provider) {
     // console.log("stopping provider engine...");
     // see: https://github.com/trufflesuite/truffle-hdwallet-provider/issues/46
@@ -66,7 +66,7 @@ const exit = (code: number = 0): void => {
 
 if (options.help) {
   usage();
-  exit();
+  exit(0);
 }
 
 let providerConfigPath: string;
@@ -76,12 +76,12 @@ let mnemonic: string;
 
 if (options.providerConfig && options.mnemonic) {
   console.log(`can't supply providerConfig and mnemonic at the same`);
-  exit();
+  exit(1);
 }
 
 if (options.providerConfig && (options.url || options.port)) {
   console.log(`can't supply providerConfig and url or port at the same`);
-  exit();
+  exit(1);
 }
 
 // if (options.mnemonic && !options.url) {
@@ -94,7 +94,7 @@ if (options.mnemonic) {
 } else if (options.providerConfig) {
   if (!options.providerConfig.exists) {
     console.log(`provider file does not exist`);
-    exit();
+    exit(1);
   }
   providerConfigPath = options.providerConfig.filename;
 }
@@ -106,7 +106,7 @@ if (options.url) {
 
 if (!options.script || !options.script.length) {
   console.log(`script name is required`);
-  exit();
+  exit(1);
 }
 
 const scriptPath = path.normalize(options.script[0]);
@@ -184,20 +184,22 @@ try {
         return script[method](web3, networkName, ...extraParameters)
           .then(() => {
             // console.log(`Completed ${method}`);
-            exit();
+            exit(0);
           })
           .catch((ex: Error) => {
             console.log(`Error in ${method}: ${ex.message ? ex.message : ex}`);
-            exit();
+            exit(1);
           });
       })
       .catch((ex: Error) => {
         console.log(`Error: ${ex.message ? ex.message : ex}`);
-        exit();
+        exit(1);
       });
   };
 
   runScript();
+
 } catch (ex) {
   console.log(`an error occurred: ${ex}`);
+  process.exitCode = 1;
 }
