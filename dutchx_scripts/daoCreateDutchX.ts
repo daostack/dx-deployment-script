@@ -116,7 +116,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
     for (const lockSpec of mockConfig.locks) {
       let address: Address;
-      if (!lockSpec.account.startsWith('0x')) {
+      if (typeof lockSpec.account === 'number') {
         address = accounts[lockSpec.account];
       } else {
         address = lockSpec.account;
