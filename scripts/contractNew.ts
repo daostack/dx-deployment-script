@@ -66,6 +66,10 @@ export const run = async (
     throw new Error(`gasPrice was not supplied`);
   }
 
+  if ((gasPrice === 'estimate') && (networkName !== 'Live')) {
+    throw new Error(`cancan only estimate gasPrice on mainnet`);
+  }
+
   if (gasPrice === 'estimate') {
     ConfigService.set('gasPriceAdjustment', async (defaultGasPrice: BigNumber) => {
       try {

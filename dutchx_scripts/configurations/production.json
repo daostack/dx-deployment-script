@@ -19,33 +19,31 @@
   "estimateGas": true,
   "schemeParameters": {
     "LockingEth4Reputation": {
-      "gas": "max",
-      "gasPrice": 50000000000,
+      "gas": "something better than max?",
+      "gasPrice": "estimate",
       "lockingRatio": 0.08,
       "maxLockingPeriod": 31536000
     },
     "LockingToken4Reputation": {
-      "gas": "max",
-      "gasPrice": 50000000000,
+      "gas": "something better than max?",
+      "gasPrice": "estimate",
       "lockingRatio": 0.3,
       "maxLockingPeriod": 31536000,
       "priceOracle": {
-        "address": ""
+        "address": "????"
         }
-      }
     },
     "ExternalLocking4Reputation": {
-      "gas": "max",
-      "gasPrice": 50000000000,
+      "gas": "something better than max?",
+      "gasPrice": "estimate",
       "lockingRatio": 0.5,
       "externalLocker": {
-        "address": ""
+        "address": "????"
         }
-      }
     },
     "Auction4Reputation": {
-      "gas": "max",
-      "gasPrice": 50000000000,
+      "gas": "something better than max?",
+      "gasPrice": "estimate",
       "lockingRatio": 0.1,
       "numAuctions": 5
     }
