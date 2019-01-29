@@ -2,6 +2,8 @@ import {
   Web3
 } from '@daostack/arc.js';
 
+import { run as currentTime } from './netCurrentBlockTime';
+
 /**
  * increase ganache time by the given number of seconds
  * @param web3
@@ -39,7 +41,8 @@ export const run = async (
         return err2 ? reject(err2) : resolve(res);
       });
     });
-  });
-
-  return Promise.resolve();
+  })
+    .then(() => {
+      return currentTime(web3, networkName);
+    });
 };

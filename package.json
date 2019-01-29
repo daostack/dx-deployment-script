@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dkent600/arc.js-scripts.git"
+    "url": "git+https://github.com/daostack/dx-deployment-script.git"
   },
   "keywords": [
     "DAOstack",
@@ -33,16 +33,16 @@
   "author": "DAOstack.io",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/dkent600/arc.js-scripts/issues"
+    "url": "https://github.com/daostack/dx-deployment-script/issues"
   },
-  "homepage": "https://github.com/dkent600/arc.js-scripts#readme",
+  "homepage": "https://github.com/daostack/dx-deployment-script#readme",
   "files": [
     "scripts/",
     "custom_typings/",
     "tsconfig.json"
   ],
   "dependencies": {
-    "@daostack/arc.js": "0.0.0-alpha.111",
+    "@daostack/arc.js": "0.0.0-alpha.115",
     "@types/node": "^10.5.2",
     "axios": "^0.18.0",
     "command-line-args": "^5.0.2",
@@ -50,11 +50,11 @@
     "cwd": "^0.10.0",
     "es6-promisify": "^6.0.0",
     "fs-extra": "^7.0.0",
-    "ganache-cli": "^6.2.3",
+    "ganache-cli": "^6.2.5",
     "growl": "~> 1.10.0",
     "rimraf": "^2.6.2",
-    "truffle-hdwallet-provider": "0.0.6",
-    "typescript": "^2.9.2",
+    "truffle-hdwallet-provider": "^1.0.2",
+    "typescript": "^3.2.4",
     "web3-provider-engine": "github:MetaMask/provider-engine"
   },
   "devDependencies": {

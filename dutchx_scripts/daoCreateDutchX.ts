@@ -103,7 +103,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
     const mockConfig = externalLockerConfig.mock;
 
     const externalLockerMock:
-      { lock: (amount: string, options: { from: Address }) => Promise<void>, address: Address } =
+      { lock: (amount: string, from: Address) => Promise<void>, address: Address } =
       await contractNew(web3, networkName, { name: 'ExternalTokenLockerMock' },
         mockConfig.gas,
         mockConfig.gasPrice
@@ -118,7 +118,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
       } else {
         address = lockSpec.account;
       }
-      await externalLockerMock.lock(web3.toWei(lockSpec.amount), { from: address });
+      await externalLockerMock.lock(web3.toWei(lockSpec.amount), address);
     }
   } else {
     externalLockerAddress = externalLockerConfig.address;
