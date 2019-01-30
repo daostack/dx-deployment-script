@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "preserveConstEnums": true,
+    "outDir": "build",
+    "rootDirs": [
+      "scripts",
+      "dutchx_scripts",
+      "custom_typings/system.d.ts"
+    ],
+    "sourceMap": true,
+    "declaration": true,
+    "importHelpers": true,
+    "lib": [
+      "es2015",
+      "es2017",
+      "dom"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
+}

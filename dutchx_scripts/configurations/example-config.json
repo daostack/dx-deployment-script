@@ -1,0 +1,142 @@
+/**
+  you must supply the path to a file like this (without the comments),
+  as the sole parameter to daoCreateDutchX script
+*/
+{
+  "daoConfig": {
+    "name": "dxDAO",
+    "tokenName": "dxToken",
+    "tokenSymbol": "DUX",
+    "founders": [
+      {
+        /**
+          random account value
+        */
+        "address": "0x0BDFC610EfFc3aAFc332343fd9b48Def45A83e29",
+        /**
+          must be 0
+        */
+        "tokens": "0",
+        /**
+          must be 0
+        */
+        "reputation": "0"
+      }
+    ]
+  },
+  "lockingPeriodStartDate":     "2019-02-18T12:00:00.000+0200",
+  /**
+    redeemEnableTime is always set to lockingPeriodEndDate
+  */
+  "lockingPeriodEndDate":       "2019-03-20T12:00:00.000+0200",
+  "lockingPeriodStartDateMgn":  "2019-03-20T11:00:00.000+0200",
+  "lockingPeriodEndDateMgn":    "2019-03-20T12:00:00.000+0200",
+  /**
+    must be in Wei
+  */
+  "totalRepReward": 1000000,
+  "estimateGas": true,
+  "schemeParameters": {
+    "LockingEth4Reputation": {
+      /**
+        "max" computes a gas limit close to the maximum current block gas limit.
+        Used when deploying the contract.
+      */
+      "gas": "max",
+      /**
+        in Gwei.
+        Used when deploying the contract.
+      */
+      "gasPrice": 50000000000,
+      "lockingRatio": 0.08,
+      /**
+        31536000 is one year in seconds
+      */
+      "maxLockingPeriod": 31536000
+    },
+    "LockingToken4Reputation": {
+      "gas": "max",
+      "gasPrice": 50000000000,
+      "lockingRatio": 0.3,
+      "maxLockingPeriod": 31536000,
+      "priceOracle": {
+        /**
+          supply an address or "useMock"
+        */
+        "address": "useMock",
+        /**
+          used only if "useMock"
+        */
+        "mock": {
+          "gas": "max",
+          "gasPrice": 50000000000,
+          "tokens": [
+            {
+              /**
+                token address
+              */
+              "address": "[any address]",
+              "numerator": 380407,
+              "denominator": 200000000
+            },
+            {
+              /**
+                "GEN" will resolve to the GEN address given by the DAOstack migration repository
+              */
+              "address": "GEN",
+              "numerator": 380407,
+              "denominator": 200000000
+            }
+          ]
+        }
+      }
+    },
+    "ExternalLocking4Reputation": {
+      "gas": "max",
+      "gasPrice": 50000000000,
+      "lockingRatio": 0.5,
+      "externalLocker": {
+        /**
+          supply  address or "useMock"
+        */
+        "address": "useMock",
+        /**
+          used only if "useMock"
+        */
+        "mock": {
+          "gas": "max",
+          "gasPrice": 50000000000,
+          "locks": [
+            {
+              /**
+                account on whose behalf to lock
+              */
+              "account": "[any address]",
+              /**
+                not in Wei
+              */
+              "amount": 100
+            },
+            {
+              /**
+                A number here will resolve to accounts[the number]
+              */
+              "account": 0,
+              "amount": 100
+            },
+            {
+              "account": 1,
+              "amount": 100
+            }
+          ]
+        }
+      }
+    },
+    "Auction4Reputation": {
+      "gas": "max",
+      "gasPrice": 50000000000,
+      "lockingRatio": 0.1,
+      "numAuctions": 5
+    }
+  }
+}

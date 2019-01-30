@@ -1,0 +1,18 @@
+dist: trusty
+
+language: node_js
+
+node_js:
+  - "10.15.0"
+
+before_install:
+
+install:
+  - npm install
+  - npm run build
+  - npm run lint
+  - nohup npm run ganache &
+  - npm run migrateContracts
+
+script:
+  - npm run script daoCreateDutchX ../../dutchx_scripts/configurations/travis-test-config.json
