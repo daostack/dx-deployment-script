@@ -1,6 +1,7 @@
 build
 .vscode
 local_scripts
+node_modules
 providers
 *.ps1
 

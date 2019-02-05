@@ -3,6 +3,7 @@ import {
   Auction4ReputationFactory,
   ConfigService,
   DAO,
+  DefaultSchemePermissions,
   ExternalLocking4ReputationFactory,
   InitializeArcJs,
   LockingEth4ReputationFactory,
@@ -146,6 +147,21 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
       {
         address: auction4Reputation.address,
         name: 'Auction4Reputation',
+      },
+      {
+        address: Utils.getDeployedAddress('ContributionReward'),
+        parametersHash: '0x3fb8bf97a9a9ea15a37fd0ec72555a3b89c06cf19f92705138749e427312c294',
+        permissions: DefaultSchemePermissions.ContributionReward,
+      },
+      {
+        address: Utils.getDeployedAddress('SchemeRegistrar'),
+        parametersHash: '0x89b69e45bb80e1f1250c5226ccc5873ea4d6edc5ec9277a14fa68c4ab1837cc9',
+        permissions: DefaultSchemePermissions.SchemeRegistrar,
+      },
+      {
+        address: Utils.getDeployedAddress('GenericScheme'),
+        parametersHash: '0x1e25ee128c360531fceac94dae151b70f629a0728e40af1da05f3660d2324b48',
+        permissions: DefaultSchemePermissions.GenericScheme,
       },
     ]];
 

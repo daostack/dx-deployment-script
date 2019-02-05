@@ -1,8 +1,8 @@
 {
   "daoConfig": {
     "name": "dxDAO",
-    "tokenName": "dxToken",
-    "tokenSymbol": "DUX",
+    "tokenName": "dxDAO",
+    "tokenSymbol": "DXD",
     "founders": [
       {
         "address": "0x0BDFC610EfFc3aAFc332343fd9b48Def45A83e29",
@@ -74,7 +74,7 @@
       "gas": "max",
       "gasPrice": 50000000000,
       "lockingRatio": 0.1,
-      "numAuctions": 5
+      "numAuctions": 10
     }
   }
 }
