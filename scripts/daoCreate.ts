@@ -44,7 +44,7 @@ export const run = async (
   }
 
   // tslint:disable-next-line: no-bitwise
-  LoggingService.logLevel = LogLevel.info | LogLevel.error;
+  LoggingService.logLevel = LoggingService.logLevel | LogLevel.info | LogLevel.error;
 
   await InitializeArcJs();
   ConfigService.set('estimateGas', true);

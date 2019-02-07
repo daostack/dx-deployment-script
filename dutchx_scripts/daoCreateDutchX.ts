@@ -3,13 +3,15 @@ import {
   Auction4ReputationFactory,
   ConfigService,
   DAO,
-  DefaultSchemePermissions,
   ExternalLocking4ReputationFactory,
   InitializeArcJs,
   LockingEth4ReputationFactory,
   LockingToken4ReputationFactory,
   Utils,
-  Web3
+  Web3,
+  WrapperService,
+  LogLevel,
+  LoggingService
 } from '@daostack/arc.js';
 
 import { run as contractNew } from '../scripts/contractNew';
@@ -27,7 +29,11 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
   const config = require(configPath);
 
   await InitializeArcJs({
-    filter: {},
+    filter: {
+      ContributionReward: true,
+      GenericScheme: true,
+      SchemeRegistrar: true,
+    },
   });
 
   ConfigService.set('estimateGas', config.estimateGas);
@@ -130,6 +136,43 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
    */
   const daoConfig = config.daoConfig;
 
+  const gpAddress = Utils.getDeployedAddress('GenesisProtocol');
+
+  const crWrapper = WrapperService.wrappers.ContributionReward;
+
+  const crParamsHash = (await crWrapper.setParameters({
+    orgNativeTokenFee: '0',
+    voteParametersHash: '0x3fb8bf97a9a9ea15a37fd0ec72555a3b89c06cf19f92705138749e427312c294',
+    votingMachineAddress: gpAddress,
+  })).result;
+
+  console.log(`ContributionReward:`);
+  console.log(`  address: ${crWrapper.address}`);
+  console.log(`  params hash: ${crParamsHash}`);
+
+  const srWrapper = WrapperService.wrappers.SchemeRegistrar;
+
+  const srParamsHash = (await srWrapper.setParameters({
+    voteParametersHash: '0x89b69e45bb80e1f1250c5226ccc5873ea4d6edc5ec9277a14fa68c4ab1837cc9',
+    votingMachineAddress: gpAddress,
+  })).result;
+
+  console.log(`SchemeRegistrar:`);
+  console.log(`  address: ${srWrapper.address}`);
+  console.log(`  params hash: ${srParamsHash}`);
+
+  const gsWrapper = WrapperService.wrappers.GenericScheme;
+
+  const gsParamsHash = (await gsWrapper.setParameters({
+    contractToCall: '0x0',
+    voteParametersHash: '0x1e25ee128c360531fceac94dae151b70f629a0728e40af1da05f3660d2324b48',
+    votingMachineAddress: gpAddress,
+  })).result;
+
+  console.log(`GenericScheme:`);
+  console.log(`  address: ${gsWrapper.address}`);
+  console.log(`  params hash: ${gsParamsHash}`);
+
   daoConfig.schemes = [...(daoConfig.schemes || []), ...
     [
       {
@@ -149,21 +192,24 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
         name: 'Auction4Reputation',
       },
       {
-        address: Utils.getDeployedAddress('ContributionReward'),
-        parametersHash: '0x3fb8bf97a9a9ea15a37fd0ec72555a3b89c06cf19f92705138749e427312c294',
-        permissions: DefaultSchemePermissions.ContributionReward,
+        address: crWrapper.address,
+        parametersHash: crParamsHash,
+        permissions: crWrapper.getDefaultPermissions(),
       },
       {
-        address: Utils.getDeployedAddress('SchemeRegistrar'),
-        parametersHash: '0x89b69e45bb80e1f1250c5226ccc5873ea4d6edc5ec9277a14fa68c4ab1837cc9',
-        permissions: DefaultSchemePermissions.SchemeRegistrar,
+        address: srWrapper.address,
+        parametersHash: srParamsHash,
+        permissions: crWrapper.getDefaultPermissions(),
       },
       {
-        address: Utils.getDeployedAddress('GenericScheme'),
-        parametersHash: '0x1e25ee128c360531fceac94dae151b70f629a0728e40af1da05f3660d2324b48',
-        permissions: DefaultSchemePermissions.GenericScheme,
+        address: gsWrapper.address,
+        parametersHash: gsParamsHash,
+        permissions: crWrapper.getDefaultPermissions(),
       },
     ]];
+
+  // tslint:disable-next-line: no-bitwise
+  LoggingService.logLevel = LogLevel.error | LogLevel.info | LogLevel.debug;
 
   const dao = (await daoCreate(web3, networkName, daoConfig, 'true')) as DAO;
 
