@@ -7,11 +7,11 @@ import {
   InitializeArcJs,
   LockingEth4ReputationFactory,
   LockingToken4ReputationFactory,
+  LoggingService,
+  LogLevel,
   Utils,
   Web3,
-  WrapperService,
-  LogLevel,
-  LoggingService
+  WrapperService
 } from '@daostack/arc.js';
 
 import { run as contractNew } from '../scripts/contractNew';
