@@ -1,0 +1,82 @@
+{
+  "daoConfig": {
+    "name": "dxDAO",
+    "tokenName": "dxDAO",
+    "tokenSymbol": "DXD",
+    "founders": [
+      {
+        "address": "0x0BDFC610EfFc3aAFc332343fd9b48Def45A83e29",
+        "tokens": 0,
+        "reputation": 0
+      }
+    ]
+  },
+  "lockingPeriodStartDate":     "2019-02-12T21:00:00.000+0200",
+  "lockingPeriodEndDate":       "2019-05-17T01:12:00.000+0200",
+  "lockingPeriodStartDateMgn":  "2019-02-12T22:15:00.000+0200",
+  "lockingPeriodEndDateMgn":    "2019-05-17T01:12:00.000+0200",
+  "totalRepReward": 1000000,
+  "estimateGas": true,
+  "schemeParameters": {
+    "LockingEth4Reputation": {
+      "gas": "max",
+      "gasPrice": 50000000000,
+      "lockingRatio": 0.08,
+      "maxLockingPeriod": 7200
+    },
+    "LockingToken4Reputation": {
+      "gas": "max",
+      "gasPrice": 50000000000,
+      "lockingRatio": 0.3,
+      "maxLockingPeriod": 7200,
+      "priceOracle": {
+        "address": "useMock",
+        "mock": {
+          "gas": "max",
+          "gasPrice": 50000000000,
+          "tokens": [
+            {
+              "address": "GEN",
+              "numerator": 380407,
+              "denominator": 200000000
+            },
+            {
+              "address": "0x6018bf616ec9db02f90c8c8529ddadc10a5c29dc",
+              "numerator": 380407,
+              "denominator": 200000000
+            },
+            {
+              "address": "0x4edc383adea781762b74e7082c03f423523e61bb",
+              "numerator": 380407,
+              "denominator": 200000000
+            }
+          ]
+        }
+      }
+    },
+    "ExternalLocking4Reputation": {
+      "gas": "max",
+      "gasPrice": 50000000000,
+      "lockingRatio": 0.5,
+      "externalLocker": {
+        "address": "useMock",
+        "mock": {
+          "gas": "max",
+          "gasPrice": 50000000000,
+          "locks": [
+            {
+              "account": 0,
+              "amount": 100
+            }
+          ]
+        }
+      }
+    },
+    "Auction4Reputation": {
+      "gas": "max",
+      "gasPrice": 50000000000,
+      "lockingRatio": 0.1,
+      "numAuctions": 10
+    }
+  }
+}
