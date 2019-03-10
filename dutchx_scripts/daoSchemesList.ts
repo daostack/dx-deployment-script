@@ -16,7 +16,11 @@ import { promisify } from 'es6-promisify';
  * @param networkName
  * @param avatar
  */
-export const run = async (web3: Web3, networkName: string, avatar: Address): Promise<void> => {
+export const run = async (
+  web3: Web3,
+  networkName: string,
+  avatar: Address,
+  blockNum: string): Promise<void> => {
 
   if (!avatar) {
     return Promise.reject('avatar was not supplied');
@@ -29,7 +33,10 @@ export const run = async (web3: Web3, networkName: string, avatar: Address): Pro
 
   const dao: DAO = await DAO.at(avatar);
 
-  const schemes = await dao.getSchemes();
+  const schemes = await dao.getSchemes(
+    undefined,
+    blockNum ? { fromBlock: blockNum } : undefined
+  );
 
   console.log(`address                                    | contract name`);
   for (const scheme of schemes) {
