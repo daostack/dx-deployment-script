@@ -14,6 +14,7 @@ import {
   WrapperService
 } from '@daostack/arc.js';
 
+import { Common } from '../scripts/common';
 import { run as contractNew } from '../scripts/contractNew';
 import { run as daoCreate } from '../scripts/daoCreate';
 import { run as tokenMint } from '../scripts/tokenMint';
@@ -28,43 +29,73 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
   const config = require(configPath);
 
-  await InitializeArcJs({
-    filter: {
-      ContributionReward: true,
-      GenericScheme: true,
-      SchemeRegistrar: true,
-    },
-  });
+  await InitializeArcJs(); // note this is used by daoCreate as well
 
   ConfigService.set('estimateGas', config.estimateGas);
 
-  const lockingEth4Reputation =
-    await LockingEth4ReputationFactory
-      .at((await contractNew(web3, networkName,
-        { name: 'LockingEth4Reputation' },
-        config.schemeParameters.LockingEth4Reputation.gas,
-        config.schemeParameters.LockingEth4Reputation.gasPrice) as ILock4ReputationContract).address);
+  let lockingEth4Reputation: ILock4ReputationContract;
 
-  const lockingToken4Reputation =
-    await LockingToken4ReputationFactory
-      .at((await contractNew(web3, networkName,
-        { name: 'LockingToken4Reputation' },
-        config.schemeParameters.LockingToken4Reputation.gas,
-        config.schemeParameters.LockingToken4Reputation.gasPrice) as ILock4ReputationContract).address);
+  if (config.schemeParameters.LockingEth4Reputation.address) {
+    lockingEth4Reputation = await LockingEth4ReputationFactory.at(config.schemeParameters.LockingEth4Reputation.address);
+    console.log(`using LockingEth4Reputation at ${config.schemeParameters.LockingEth4Reputation.address}`);
+  } else {
+    const contract = await contractNew(web3, networkName,
+      { name: 'LockingEth4Reputation' },
+      config.schemeParameters.LockingEth4Reputation.gas,
+      config.schemeParameters.LockingEth4Reputation.gasPrice);
 
-  const externalLocking4Reputation =
-    await ExternalLocking4ReputationFactory
-      .at((await contractNew(web3, networkName,
-        { name: 'ExternalLocking4Reputation' },
-        config.schemeParameters.ExternalLocking4Reputation.gas,
-        config.schemeParameters.ExternalLocking4Reputation.gasPrice) as ILock4ReputationContract).address);
+    Common.setTruffleTimeout(contract, 0);
 
-  const auction4Reputation =
-    await Auction4ReputationFactory
-      .at((await contractNew(web3, networkName,
-        { name: 'Auction4Reputation' },
-        config.schemeParameters.Auction4Reputation.gas,
-        config.schemeParameters.Auction4Reputation.gasPrice) as ILock4ReputationContract).address);
+    lockingEth4Reputation = await LockingEth4ReputationFactory.at(contract.address);
+  }
+
+  let lockingToken4Reputation: ILock4ReputationContract;
+
+  if (config.schemeParameters.LockingToken4Reputation.address) {
+    lockingToken4Reputation = await LockingToken4ReputationFactory.at(config.schemeParameters.LockingToken4Reputation.address);
+    console.log(`using LockingToken4Reputation at ${config.schemeParameters.LockingToken4Reputation.address}`);
+  } else {
+    const contract = await contractNew(web3, networkName,
+      { name: 'LockingToken4Reputation' },
+      config.schemeParameters.LockingToken4Reputation.gas,
+      config.schemeParameters.LockingToken4Reputation.gasPrice);
+
+    Common.setTruffleTimeout(contract, 0);
+
+    lockingToken4Reputation = await LockingToken4ReputationFactory.at(contract.address);
+  }
+
+  let externalLocking4Reputation: ILock4ReputationContract;
+
+  if (config.schemeParameters.ExternalLocking4Reputation.address) {
+    externalLocking4Reputation = await ExternalLocking4ReputationFactory.at(config.schemeParameters.ExternalLocking4Reputation.address);
+    console.log(`using ExternalLocking4Reputation at ${config.schemeParameters.ExternalLocking4Reputation.address}`);
+  } else {
+    const contract = await contractNew(web3, networkName,
+      { name: 'ExternalLocking4Reputation' },
+      config.schemeParameters.ExternalLocking4Reputation.gas,
+      config.schemeParameters.ExternalLocking4Reputation.gasPrice);
+
+    Common.setTruffleTimeout(contract, 0);
+
+    externalLocking4Reputation = await ExternalLocking4ReputationFactory.at(contract.address);
+  }
+
+  let auction4Reputation: ILock4ReputationContract;
+
+  if (config.schemeParameters.Auction4Reputation.address) {
+    auction4Reputation = await Auction4ReputationFactory.at(config.schemeParameters.Auction4Reputation.address);
+    console.log(`using Auction4Reputation at ${config.schemeParameters.Auction4Reputation.address}`);
+  } else {
+    const contract = await contractNew(web3, networkName,
+      { name: 'Auction4Reputation' },
+      config.schemeParameters.Auction4Reputation.gas,
+      config.schemeParameters.Auction4Reputation.gasPrice);
+
+    Common.setTruffleTimeout(contract, 0);
+
+    auction4Reputation = await Auction4ReputationFactory.at(contract.address);
+  }
 
   /**
    * Arc.js gets GEN addresses from the DAOstack migration repo
@@ -91,11 +122,14 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
     priceOracleAddress = priceOracleMock.address;
 
+    Common.sleep(4000);
+
     for (const tokenSpec of mockConfig.tokens) {
       const address = tokenSpec.address === 'GEN' ? genTokenAddress : tokenSpec.address;
-      await priceOracleMock.setTokenPrice(address, tokenSpec.numerator, tokenSpec.denominator);
+      priceOracleMock.setTokenPrice(address, tokenSpec.numerator, tokenSpec.denominator);
     }
   } else {
+    console.log(`using priceOracleAddress at ${priceOracleConfig.address}`);
     priceOracleAddress = priceOracleConfig.address;
   }
 
@@ -118,6 +152,8 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
     externalLockerAddress = externalLockerMock.address;
 
+    Common.sleep(4000);
+
     for (const lockSpec of mockConfig.locks) {
       let address: Address;
       if (typeof lockSpec.account === 'number') {
@@ -125,9 +161,10 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
       } else {
         address = lockSpec.account;
       }
-      await externalLockerMock.lock(web3.toWei(lockSpec.amount), address);
+      externalLockerMock.lock(web3.toWei(lockSpec.amount), address);
     }
   } else {
+    console.log(`using externalLockerAddress at ${externalLockerConfig.address}`);
     externalLockerAddress = externalLockerConfig.address;
   }
 
@@ -209,7 +246,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
     ]];
 
   // tslint:disable-next-line: no-bitwise
-  LoggingService.logLevel = LogLevel.error | LogLevel.info | LogLevel.debug;
+  LoggingService.logLevel = LogLevel.error | LogLevel.info;
 
   const dao = (await daoCreate(web3, networkName, daoConfig, 'true')) as DAO;
 

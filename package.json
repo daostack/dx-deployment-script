@@ -52,8 +52,9 @@
     "fs-extra": "^7.0.0",
     "ganache-cli": "^6.2.5",
     "growl": "~> 1.10.0",
+    "ora": "^3.2.0",
     "rimraf": "^2.6.2",
-    "truffle-hdwallet-provider": "^1.0.2",
+    "truffle-hdwallet-provider": "^1.0.5",
     "typescript": "^3.2.4",
     "web3-provider-engine": "github:MetaMask/provider-engine"
   },

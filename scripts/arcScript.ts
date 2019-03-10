@@ -128,17 +128,17 @@ const connectToNetwork = async (): Promise<void> => {
   // tslint:disable-next-line: variable-name
   const HdWalletProvider = require('truffle-hdwallet-provider');
   // tslint:disable-next-line: variable-name
-  const NonceTrackerSubprovider = require('web3-provider-engine/subproviders/nonce-tracker');
+  // const NonceTrackerSubprovider = require('web3-provider-engine/subproviders/nonce-tracker');
   console.log(`Provider: '${providerConfig.providerUrl}'`);
   console.log(`Account: '${providerConfig.mnemonic}'`);
   provider = new HdWalletProvider(providerConfig.mnemonic, providerConfig.providerUrl);
-  if (options.isInfura || (providerConfig && providerConfig.name && (providerConfig.name.toLowerCase() === 'infura'))) {
-    console.log('applying NonceTrackerSubprovider');
-    // see https://ethereum.stackexchange.com/a/50038/21913
-    const nonceTracker = new NonceTrackerSubprovider();
-    provider.engine._providers.unshift(nonceTracker);
-    nonceTracker.setEngine(provider.engine);
-  }
+  // if (options.isInfura || (providerConfig && providerConfig.name && (providerConfig.name.toLowerCase() === 'infura'))) {
+  //   console.log('applying NonceTrackerSubprovider');
+  //   // see https://ethereum.stackexchange.com/a/50038/21913
+  //   const nonceTracker = new NonceTrackerSubprovider();
+  //   provider.engine._providers.unshift(nonceTracker);
+  //   nonceTracker.setEngine(provider.engine);
+  // }
   (global as any).web3 = new webConstructor(provider);
 };
 

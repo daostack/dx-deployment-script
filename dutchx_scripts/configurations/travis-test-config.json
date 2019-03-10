@@ -3,6 +3,7 @@
     "name": "dxDAO",
     "tokenName": "dxDAO",
     "tokenSymbol": "DXD",
+    "universalController": false,
     "founders": [
       {
         "address": "0x0BDFC610EfFc3aAFc332343fd9b48Def45A83e29",

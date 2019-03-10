@@ -12,42 +12,34 @@
       }
     ]
   },
-  "lockingPeriodStartDate":     "2019-02-12T21:00:00.000+0200",
-  "lockingPeriodEndDate":       "2019-05-17T01:12:00.000+0200",
-  "lockingPeriodStartDateMgn":  "2019-02-12T22:15:00.000+0200",
-  "lockingPeriodEndDateMgn":    "2019-05-17T01:12:00.000+0200",
+  "lockingPeriodStartDate":     "2019-03-10T00:00:00.000+0200",
+  "lockingPeriodEndDate":       "2019-05-10T00:00:00.000+0200",
+  "lockingPeriodStartDateMgn":  "2019-03-10T00:00:00.000+0200",
+  "lockingPeriodEndDateMgn":    "2019-05-10T00:00:00.000+0200",
   "totalRepReward": 1000000,
   "estimateGas": true,
   "schemeParameters": {
     "LockingEth4Reputation": {
-      "gas": "max",
-      "gasPrice": 50000000000,
+      "address": "0x75aa2420cc9c1ff3c7d87b2140c269e3d0178eb4",
+      "gas": 6100000,
+      "gasPrice": "estimate",
       "lockingRatio": 0.08,
-      "maxLockingPeriod": 7200
+      "maxLockingPeriod": 31536000
     },
     "LockingToken4Reputation": {
-      "gas": "max",
-      "gasPrice": 50000000000,
+      "address": "0x39139a4d07546c72c548f8727faa57666f92a277",
+      "gas": 6100000,
+      "gasPrice": "estimate",
       "lockingRatio": 0.3,
-      "maxLockingPeriod": 7200,
+      "maxLockingPeriod": 31536000,
       "priceOracle": {
-        "address": "useMock",
+        "address": "0x6d69bf70d4247fca1ba0326c23cd312237e57de6",
         "mock": {
-          "gas": "max",
-          "gasPrice": 50000000000,
+          "gas": 6100000,
+          "gasPrice": "estimate",
           "tokens": [
             {
               "address": "GEN",
-              "numerator": 380407,
-              "denominator": 200000000
-            },
-            {
-              "address": "0x6018bf616ec9db02f90c8c8529ddadc10a5c29dc",
-              "numerator": 380407,
-              "denominator": 200000000
-            },
-            {
-              "address": "0x4edc383adea781762b74e7082c03f423523e61bb",
               "numerator": 380407,
               "denominator": 200000000
             }
@@ -56,14 +48,15 @@
       }
     },
     "ExternalLocking4Reputation": {
-      "gas": "max",
-      "gasPrice": 50000000000,
+      "address": "0x9fcc0fb00db36ce35ccebf8c29b43dba47b81e84",
+      "gas": 6100000,
+      "gasPrice": "estimate",
       "lockingRatio": 0.5,
       "externalLocker": {
-        "address": "useMock",
+        "address": "0xf7665af72cbddf5267f86eb734ad614a611736e0",
         "mock": {
-          "gas": "max",
-          "gasPrice": 50000000000,
+          "gas": 6500000,
+          "gasPrice": "estimate",
           "locks": [
             {
               "account": 0,
@@ -74,8 +67,9 @@
       }
     },
     "Auction4Reputation": {
-      "gas": "max",
-      "gasPrice": 50000000000,
+      "address": "0x49c1b349d5e78534676698faecc20e6230bdc12f",
+      "gas": 6100000,
+      "gasPrice": "estimate",
       "lockingRatio": 0.1,
       "numAuctions": 10
     }
