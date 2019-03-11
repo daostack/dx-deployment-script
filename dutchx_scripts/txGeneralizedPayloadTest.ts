@@ -1,8 +1,8 @@
 import {
   Address,
-  InitializeArcJs,
   Utils,
   Web3,
+  Hash,
 } from '@daostack/arc.js';
 const abiDecoder = require('abi-decoder');
 
@@ -12,12 +12,6 @@ const abiDecoder = require('abi-decoder');
  * @param networkName
  */
 export const run = async (web3: Web3) => {
-
-  // await InitializeArcJs(
-  //   {
-  //     filter: {}
-  //   }
-  // );
 
   return sendTransactionWithReferrer(
     web3,
@@ -39,13 +33,11 @@ export const sendTransactionWithReferrer = async (
   functionName: string,
   referrerAddress: Address,
   ...functionParameters: Array<any>
-): Promise<void> => {
+): Promise<Hash> => {
 
   const truffleContract = await Utils.requireContract(contractName);
 
   const abi = truffleContract.abi.filter((entry: any) => entry.name === functionName)[0];
-
-  // const contract = truffleContract.at(contractAddress);
 
   // tslint:disable-next-line: variable-name
   const SolidityFunction = require('web3/lib/web3/function');
@@ -106,5 +98,5 @@ export const sendTransactionWithReferrer = async (
 
   console.log('Success');
 
-  return Promise.resolve();
+  return Promise.resolve(txId);
 };
