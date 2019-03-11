@@ -11,7 +11,7 @@ export const run = async (web3: Web3) => {
 
   const referrerAddress = '0x1bf4e7D549fD7Bf9c6BA3Be8BD2b9Af62F086220';
 
-  const txId = await sendTransactionWithReferrer(
+  await sendTransactionWithReferrer(
     web3,
     'LockingEth4Reputation',
     // contract address
@@ -80,11 +80,16 @@ export const sendTransactionWithReferrer = async (
     Object.assign(payload, web3Params);
   }
 
-  const txId = web3.eth.sendTransaction(payload);
-
-  return Promise.resolve(txId);
+  return web3.eth.sendTransaction(payload);
 };
 
+/**
+ * TODO: make more generic to event types
+ * @param web3
+ * @param contractName
+ * @param contractAddress
+ * @param functionName
+ */
 export const retrieveReferrersFromEvent = async (
   web3: Web3,
   contractName: string,
@@ -164,9 +169,8 @@ export const retrieveReferrerFromTransaction = async (
 
   const referrerParam = decodedData.params.filter((param: any) => param.name === '_referrer');
 
-  return Promise.resolve(
-    (referrerParam.length && referrerParam[0].value && (referrerParam[0].value !== '0x'))
-      ? referrerParam[0].value : undefined);
+  return (referrerParam.length && referrerParam[0].value && (referrerParam[0].value !== '0x'))
+    ? referrerParam[0].value : undefined;
 };
 
 interface IReferredLockInfo extends Locking4ReputationLockEventResult {
