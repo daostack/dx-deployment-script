@@ -92,4 +92,4 @@ const findNonDeployedArcScheme = async (scheme: DaoSchemeInfo, web3: Web3): Prom
   // tslint:disable-next-line: no-console
   // // console.timeEnd('findNonDeployedArcScheme');
   return null;
-}
+};
