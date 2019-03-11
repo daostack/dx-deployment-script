@@ -1,8 +1,8 @@
 import {
   Address,
+  Hash,
   Utils,
   Web3,
-  Hash,
 } from '@daostack/arc.js';
 const abiDecoder = require('abi-decoder');
 
