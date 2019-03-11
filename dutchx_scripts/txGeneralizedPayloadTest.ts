@@ -6,11 +6,6 @@ import {
 } from '@daostack/arc.js';
 const abiDecoder = require('abi-decoder');
 
-/**
- * List schemes in the given dao.
- * @param web3
- * @param networkName
- */
 export const run = async (web3: Web3) => {
 
   return sendTransactionWithReferrer(
@@ -22,7 +17,8 @@ export const run = async (web3: Web3) => {
     // referrer address
     '0x1bf4e7D549fD7Bf9c6BA3Be8BD2b9Af62F086220',
     // the usual function arguments
-    web3.toWei('1'), accounts[0]
+    [web3.toWei('1'), accounts[0]],
+    { gas: 25530 }
   );
 };
 
@@ -32,8 +28,8 @@ export const sendTransactionWithReferrer = async (
   contractAddress: Address,
   functionName: string,
   referrerAddress: Address,
-  ...functionParameters: Array<any>
-): Promise<Hash> => {
+  functionParameters: Array<any>,
+  web3Params?: any): Promise<Hash> => {
 
   const truffleContract = await Utils.requireContract(contractName);
 
@@ -60,9 +56,11 @@ export const sendTransactionWithReferrer = async (
       [...func._inputTypes, 'address'],
       [...functionParameters, referrerAddress]);
 
-  const txId = web3.eth.sendTransaction(payload);
+  if (web3Params) {
+    Object.assign(payload, web3Params);
+  }
 
-  // console.log(`txId: ${txId}`);
+  const txId = web3.eth.sendTransaction(payload);
 
   const tx = await web3.eth.getTransaction(txId);
 
