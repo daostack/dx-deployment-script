@@ -9,36 +9,97 @@ const abiDecoder = require('abi-decoder');
 
 export const run = async (web3: Web3) => {
 
-  const referrerAddress = '0x1bf4e7D549fD7Bf9c6BA3Be8BD2b9Af62F086220';
+  //  const referrerAddress = '0x1bf4e7D549fD7Bf9c6BA3Be8BD2b9Af62F086220';
 
-  await sendTransactionWithReferrer(
+  // await sendTransactionWithReferrer(
+  //   web3,
+  //   'LockingEth4Reputation',
+  //   // contract address
+  //   '0xdb56f2e9369e0d7bd191099125a3f6c370f8ed15',
+  //   'lock',
+  //   referrerAddress,
+  //   // the usual function arguments
+  //   [10000],
+  //   // web3 config
+  //   { value: web3.toWei('.1'), gas: 6100000 }
+  // );
+
+  await printEvents(
     web3,
     'LockingEth4Reputation',
-    // contract address
     '0xdb56f2e9369e0d7bd191099125a3f6c370f8ed15',
     'lock',
-    referrerAddress,
-    // the usual function arguments
-    [10000],
-    // web3 config
-    { value: web3.toWei('.1'), gas: 6100000 }
-  );
-
-  const referrersFetched = await retrieveReferrersFromEvent(
+    'Lock');
+  await printEvents(
     web3,
     'LockingEth4Reputation',
-    // contract address
     '0xdb56f2e9369e0d7bd191099125a3f6c370f8ed15',
-    'lock'
+    'release',
+    'Release');
+  await printEvents(
+    web3,
+    'LockingToken4Reputation',
+    '0xa94b7f0465e98609391c623d0560c5720a3f2d33',
+    'lock',
+    'Lock');
+  await printEvents(
+    web3,
+    'LockingToken4Reputation',
+    '0xa94b7f0465e98609391c623d0560c5720a3f2d33',
+    'release',
+    'Release');
+  await printEvents(
+    web3,
+    'ExternalLocking4Reputation',
+    '0x6ed79aa1c71fd7bdbc515efda3bd4e26394435cc',
+    'register',
+    'Register');
+  await printEvents(
+    web3,
+    'ExternalLocking4Reputation',
+    '0x6ed79aa1c71fd7bdbc515efda3bd4e26394435cc',
+    'claim',
+    'Lock');
+  await printEvents(
+    web3,
+    'Auction4Reputation',
+    '0xb09bcc172050fbd4562da8b229cf3e45dc3045a6',
+    'bid',
+    'Bid');
+};
+
+const printEvents = async (
+  web3: Web3,
+  contractName: string,
+  contractAddress: Address,
+  methodName: string,
+  eventName: string) => {
+
+  console.log(`${contractName}: fetching events for ${methodName}...`);
+
+  const eventsFetched = await retrieveReferrersFromEvent(
+    web3,
+    contractName,
+    contractAddress,
+    methodName,
+    eventName
   );
 
-  if (!referrersFetched.length) {
-    throw new Error('did not obtain referrer information');
+  if (!eventsFetched.length) {
+    console.log('  no events found');
   }
 
-  for (const referrerInfo of referrersFetched) {
+  for (const event of eventsFetched) {
     // tslint:disable-next-line: max-line-length
-    console.log(`referred by: ${referrerInfo.referrer} | locker: ${referrerInfo._locker} | amount: ${referrerInfo._amount} | period: ${referrerInfo._period}`);
+    let output = '';
+    // tslint:disable-next-line: forin
+    for (const key in event) {
+      if (output.length) {
+        output = output + ' | ';
+      }
+      output = output + `${key}: ${event[key]}`;
+    }
+    console.log(`  ${output}`);
   }
 };
 
@@ -94,14 +155,15 @@ export const retrieveReferrersFromEvent = async (
   web3: Web3,
   contractName: string,
   contractAddress: Address,
-  functionName: string): Promise<Array<IReferredLockInfo>> => {
+  functionName: string,
+  eventName: string): Promise<Array<ILegalLockInfo>> => {
 
   const truffleContract = await Utils.requireContract(contractName);
   const contract = await truffleContract.at(contractAddress);
-  return new Promise<Array<IReferredLockInfo>>(
-    (resolve: (result: Array<IReferredLockInfo>) => void, reject: (error: Error) => void): void => {
+  return new Promise<Array<ILegalLockInfo>>(
+    (resolve: (result: Array<ILegalLockInfo>) => void, reject: (error: Error) => void): void => {
 
-      contract.Lock({}, { fromBlock: 0 }).get(
+      contract[eventName]({}, { fromBlock: 0 }).get(
         async (
           error: Error,
           logs: Array<any>): Promise<void> => {
@@ -113,19 +175,19 @@ export const retrieveReferrersFromEvent = async (
             logs = [logs];
           }
 
-          const results = new Array<IReferredLockInfo>();
+          const results = new Array<ILegalLockInfo>();
 
           for (const log of logs) {
             const txId = log.transactionHash;
-            const referrer = await retrieveReferrerFromTransaction(
+            const legalContractHash = await retrieveLegalContractHashFromTransaction(
               web3,
               contractName,
               contractAddress,
               functionName,
               txId
             );
-            if (referrer) {
-              results.push(Object.assign(log.args, { referrer }));
+            if (typeof (legalContractHash) !== 'undefined') {
+              results.push(Object.assign(log.args, { _legalContractHash: legalContractHash }));
             }
           }
           resolve(results);
@@ -133,20 +195,20 @@ export const retrieveReferrersFromEvent = async (
     });
 };
 
-export const retrieveReferrerFromTransaction = async (
+export const retrieveLegalContractHashFromTransaction = async (
   web3: Web3,
   contractName: string,
   contractAddress: Address,
   functionName: string,
-  txId: Hash): Promise<Address> => {
+  txId: Hash): Promise<Hash> => {
 
   const truffleContract = await Utils.requireContract(contractName);
 
   const abi = truffleContract.abi.filter((entry: any) => entry.name === functionName)[0];
 
   abi.inputs.push({
-    name: '_referrer',
-    type: 'address',
+    name: '_legalContractHash',
+    type: 'bytes32',
   });
 
   abiDecoder.addABI([abi]);
@@ -167,12 +229,13 @@ export const retrieveReferrerFromTransaction = async (
     throw new Error('did not obtain parameters');
   }
 
-  const referrerParam = decodedData.params.filter((param: any) => param.name === '_referrer');
+  const contractHash = decodedData.params.filter((param: any) => param.name === '_legalContractHash');
 
-  return (referrerParam.length && referrerParam[0].value && (referrerParam[0].value !== '0x'))
-    ? referrerParam[0].value : undefined;
+  // return (referrerParam.length && referrerParam[0].value && (referrerParam[0].value !== '0x'))
+  //   ? referrerParam[0].value : undefined;
+  return (contractHash.length ? contractHash[0].value : undefined);
 };
 
-interface IReferredLockInfo extends Locking4ReputationLockEventResult {
-  referrer: Address;
+interface ILegalLockInfo extends Locking4ReputationLockEventResult {
+  legalContractHash: Hash;
 }
