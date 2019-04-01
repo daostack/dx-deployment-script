@@ -122,11 +122,17 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
     priceOracleAddress = priceOracleMock.address;
 
-    Common.sleep(4000);
+    if (networkName !== 'Ganache') {
+      await Common.sleep(4000);
+    }
 
     for (const tokenSpec of mockConfig.tokens) {
       const address = tokenSpec.address === 'GEN' ? genTokenAddress : tokenSpec.address;
-      priceOracleMock.setTokenPrice(address, tokenSpec.numerator, tokenSpec.denominator);
+      if (!address) {
+        console.warn(`warning: token address not found`);
+      } else {
+        priceOracleMock.setTokenPrice(address, tokenSpec.numerator, tokenSpec.denominator);
+      }
     }
   } else {
     console.log(`using priceOracleAddress at ${priceOracleConfig.address}`);
@@ -152,7 +158,9 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
     externalLockerAddress = externalLockerMock.address;
 
-    Common.sleep(4000);
+    if (networkName !== 'Ganache') {
+      await Common.sleep(4000);
+    }
 
     for (const lockSpec of mockConfig.locks) {
       let address: Address;
@@ -161,7 +169,11 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
       } else {
         address = lockSpec.account;
       }
-      externalLockerMock.lock(web3.toWei(lockSpec.amount), address);
+      if (!address) {
+        console.warn(`warning: account address not found`);
+      } else {
+        externalLockerMock.lock(web3.toWei(lockSpec.amount), address);
+      }
     }
   } else {
     console.log(`using externalLockerAddress at ${externalLockerConfig.address}`);
@@ -178,7 +190,6 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
   const crWrapper = WrapperService.wrappers.ContributionReward;
 
   const crParamsHash = (await crWrapper.setParameters({
-    orgNativeTokenFee: '0',
     voteParametersHash: '0x3fb8bf97a9a9ea15a37fd0ec72555a3b89c06cf19f92705138749e427312c294',
     votingMachineAddress: gpAddress,
   })).result;
@@ -265,8 +276,14 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
    !!!! Should be an amount that yields a whole number when multiplied by any of the ratios below
    **********************/
   const TOTAL_REP_REWARD = config.totalRepReward;
-  const AUCTION_PERIOD = ((LOCKING_PERIOD_END_DATE.getTime() - LOCK_PERIOD_START_DATE.getTime()) / NUM_AUCTIONS) / 1000;
-  const REDEEM_ENABLE_DATE = LOCKING_PERIOD_END_DATE;
+  /**********************
+   !!!! This is a hack, just for this script, that computes the length of a auction
+   period given the length of the globally-set contract periods.  We add a millisecond to the
+   end date because the period is treated as *inclusive* of this.  (Assumes the enddate is given like
+   2019-04-14T23:59:59.999+0200).
+   **********************/
+  const AUCTION_PERIOD = (((LOCKING_PERIOD_END_DATE.getTime() + 1) - LOCK_PERIOD_START_DATE.getTime()) / NUM_AUCTIONS) / 1000;
+  const REDEEM_ENABLE_DATE = new Date(LOCKING_PERIOD_END_DATE.getTime() + 1);
 
   let schemeConfig = config.schemeParameters.LockingEth4Reputation;
 

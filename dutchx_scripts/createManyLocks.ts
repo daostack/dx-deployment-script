@@ -49,6 +49,7 @@ export const run = async (
     try {
       await lockingEth4Reputation.lock({
         amount: web3.toWei('.0000001'),
+        legalContractHash: '0x0',
         lockerAddress: accounts[0],
         period: 10, // ten second period
       });
