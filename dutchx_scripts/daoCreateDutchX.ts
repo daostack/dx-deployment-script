@@ -289,6 +289,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
   await lockingEth4Reputation.initialize(
     {
+      agreementHash: '0x0',
       avatarAddress: dao.avatar.address,
       lockingEndTime: LOCKING_PERIOD_END_DATE,
       lockingStartTime: LOCK_PERIOD_START_DATE,
@@ -302,6 +303,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
   await externalLocking4Reputation.initialize(
     {
+      agreementHash: '0x0',
       avatarAddress: dao.avatar.address,
       externalLockingContract: externalLockerAddress,
       getBalanceFuncSignature: 'lockedTokenBalances(address)',
@@ -316,6 +318,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
   await lockingToken4Reputation.initialize(
     {
+      agreementHash: '0x0',
       avatarAddress: dao.avatar.address,
       lockingEndTime: LOCKING_PERIOD_END_DATE,
       lockingStartTime: LOCK_PERIOD_START_DATE,
@@ -330,6 +333,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
   await auction4Reputation.initialize(
     {
+      agreementHash: '0x0',
       auctionPeriod: AUCTION_PERIOD,
       auctionsStartTime: LOCK_PERIOD_START_DATE,
       avatarAddress: dao.avatar.address,
