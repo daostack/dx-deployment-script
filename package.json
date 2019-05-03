@@ -42,7 +42,7 @@
     "tsconfig.json"
   ],
   "dependencies": {
-    "@daostack/arc.js": "0.0.0-alpha.135",
+    "@daostack/arc.js": "0.0.0-alpha.137",
     "@types/node": "^10.5.2",
     "abi-decoder": "^1.2.0",
     "axios": "^0.18.0",

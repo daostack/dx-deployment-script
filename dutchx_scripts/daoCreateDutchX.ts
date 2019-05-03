@@ -13,7 +13,9 @@ import {
   Web3,
   WrapperService
 } from '@daostack/arc.js';
+import axios from 'axios';
 
+import { BigNumber } from 'bignumber.js';
 import { Common } from '../scripts/common';
 import { run as contractNew } from '../scripts/contractNew';
 import { run as daoCreate } from '../scripts/daoCreate';
@@ -32,6 +34,18 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
   await InitializeArcJs(); // note this is used by daoCreate as well
 
   ConfigService.set('estimateGas', config.estimateGas);
+  if (networkName === 'Live') {
+    ConfigService.set('gasPriceAdjustment', async (defaultGasPrice: BigNumber) => {
+      try {
+        const response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json');
+        // the api gives results if 10*Gwei
+        const computedGasPrice = response.data.fast / 10;
+        return web3.toWei(computedGasPrice, 'gwei');
+      } catch (e) {
+        return defaultGasPrice;
+      }
+    });
+  }
 
   let lockingEth4Reputation: ILock4ReputationContract;
 
@@ -259,6 +273,11 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
   // tslint:disable-next-line: no-bitwise
   LoggingService.logLevel = LogLevel.error | LogLevel.info;
 
+  /**
+   * NOTE: current there is an issue on mainnet where the estimated gasPrice doesn't
+   * seem to be enough to get past forgeOrg in a timely manner and the process
+   * seems to hang waiting for success.
+   */
   const dao = (await daoCreate(web3, networkName, daoConfig, 'true')) as DAO;
 
   /**********************

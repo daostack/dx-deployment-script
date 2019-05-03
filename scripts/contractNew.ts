@@ -67,20 +67,14 @@ export const run = async (
   }
 
   if ((gasPrice === 'estimate') && (networkName !== 'Live')) {
-    throw new Error(`cancan only estimate gasPrice on mainnet`);
+    throw new Error(`can only estimate gasPrice on mainnet`);
   }
 
   if (gasPrice === 'estimate') {
-    ConfigService.set('gasPriceAdjustment', async (defaultGasPrice: BigNumber) => {
-      try {
-        const response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json');
-        // the api gives results if 10*Gwei
-        const computedGasPrice = response.data.fast / 10;
-        return web3.toWei(computedGasPrice, 'gwei');
-      } catch (e) {
-        return defaultGasPrice;
-      }
-    });
+    const response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json');
+    // the api gives results as 10*Gwei
+    const computedGasPrice = response.data.fast / 10;
+    web3Params.gasPrice = web3.toWei(computedGasPrice, 'gwei');
   } else {
     web3Params.gasPrice = Number.parseInt(gasPrice, 10);
   }
