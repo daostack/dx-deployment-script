@@ -42,8 +42,9 @@
     "tsconfig.json"
   ],
   "dependencies": {
-    "@daostack/arc.js": "0.0.0-alpha.115",
+    "@daostack/arc.js": "0.0.0-alpha.137",
     "@types/node": "^10.5.2",
+    "abi-decoder": "^1.2.0",
     "axios": "^0.18.0",
     "command-line-args": "^5.0.2",
     "command-line-usage": "^5.0.5",
@@ -52,8 +53,9 @@
     "fs-extra": "^7.0.0",
     "ganache-cli": "^6.2.5",
     "growl": "~> 1.10.0",
+    "ora": "^3.2.0",
     "rimraf": "^2.6.2",
-    "truffle-hdwallet-provider": "^1.0.2",
+    "truffle-hdwallet-provider": "^1.0.5",
     "typescript": "^3.2.4",
     "web3-provider-engine": "github:MetaMask/provider-engine"
   },

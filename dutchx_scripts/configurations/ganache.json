@@ -1,8 +1,9 @@
 {
   "daoConfig": {
     "name": "dxDAO",
-    "tokenName": "dxToken",
-    "tokenSymbol": "DUX",
+    "tokenName": "dxDAO",
+    "tokenSymbol": "DXD",
+    "universalController": false,
     "founders": [
       {
         "address": "0x0BDFC610EfFc3aAFc332343fd9b48Def45A83e29",
@@ -11,10 +12,10 @@
       }
     ]
   },
-  "lockingPeriodStartDate":     "2019-01-18T21:50:00.000+0200",
-  "lockingPeriodEndDate":       "2019-01-18T21:55:00.000+0200",
-  "lockingPeriodStartDateMgn":  "2019-01-18T21:54:00.000+0200",
-  "lockingPeriodEndDateMgn":    "2019-01-18T21:55:00.000+0200",
+  "lockingPeriodStartDate":     "2019-04-19T09:00:00.000+0000",
+  "lockingPeriodEndDate":       "2019-05-29T14:29:59.000+0000",
+  "lockingPeriodStartDateMgn":  "2019-04-19T14:11:00.000+0000",
+  "lockingPeriodEndDateMgn":    "2019-05-29T14:29:59.000+0000",
   "totalRepReward": 1000000,
   "estimateGas": true,
   "schemeParameters": {
@@ -74,7 +75,7 @@
       "gas": "max",
       "gasPrice": 50000000000,
       "lockingRatio": 0.1,
-      "numAuctions": 5
+      "numAuctions": 10
     }
   }
 }

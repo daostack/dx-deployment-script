@@ -7,10 +7,16 @@ import {
   InitializeArcJs,
   LockingEth4ReputationFactory,
   LockingToken4ReputationFactory,
+  LoggingService,
+  LogLevel,
   Utils,
-  Web3
+  Web3,
+  WrapperService
 } from '@daostack/arc.js';
+import axios from 'axios';
 
+import { BigNumber } from 'bignumber.js';
+import { Common } from '../scripts/common';
 import { run as contractNew } from '../scripts/contractNew';
 import { run as daoCreate } from '../scripts/daoCreate';
 import { run as tokenMint } from '../scripts/tokenMint';
@@ -25,39 +31,85 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
   const config = require(configPath);
 
-  await InitializeArcJs({
-    filter: {},
-  });
+  await InitializeArcJs(); // note this is used by daoCreate as well
 
   ConfigService.set('estimateGas', config.estimateGas);
+  if (networkName === 'Live') {
+    ConfigService.set('gasPriceAdjustment', async (defaultGasPrice: BigNumber) => {
+      try {
+        const response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json');
+        // the api gives results if 10*Gwei
+        const computedGasPrice = response.data.fast / 10;
+        return web3.toWei(computedGasPrice, 'gwei');
+      } catch (e) {
+        return defaultGasPrice;
+      }
+    });
+  }
 
-  const lockingEth4Reputation =
-    await LockingEth4ReputationFactory
-      .at((await contractNew(web3, networkName,
-        { name: 'LockingEth4Reputation' },
-        config.schemeParameters.LockingEth4Reputation.gas,
-        config.schemeParameters.LockingEth4Reputation.gasPrice) as ILock4ReputationContract).address);
+  let lockingEth4Reputation: ILock4ReputationContract;
 
-  const lockingToken4Reputation =
-    await LockingToken4ReputationFactory
-      .at((await contractNew(web3, networkName,
-        { name: 'LockingToken4Reputation' },
-        config.schemeParameters.LockingToken4Reputation.gas,
-        config.schemeParameters.LockingToken4Reputation.gasPrice) as ILock4ReputationContract).address);
+  if (config.schemeParameters.LockingEth4Reputation.address) {
+    lockingEth4Reputation = await LockingEth4ReputationFactory.at(config.schemeParameters.LockingEth4Reputation.address);
+    console.log(`using LockingEth4Reputation at ${config.schemeParameters.LockingEth4Reputation.address}`);
+  } else {
+    const contract = await contractNew(web3, networkName,
+      { name: 'LockingEth4Reputation' },
+      config.schemeParameters.LockingEth4Reputation.gas,
+      config.schemeParameters.LockingEth4Reputation.gasPrice);
 
-  const externalLocking4Reputation =
-    await ExternalLocking4ReputationFactory
-      .at((await contractNew(web3, networkName,
-        { name: 'ExternalLocking4Reputation' },
-        config.schemeParameters.ExternalLocking4Reputation.gas,
-        config.schemeParameters.ExternalLocking4Reputation.gasPrice) as ILock4ReputationContract).address);
+    Common.setTruffleTimeout(contract, 0);
 
-  const auction4Reputation =
-    await Auction4ReputationFactory
-      .at((await contractNew(web3, networkName,
-        { name: 'Auction4Reputation' },
-        config.schemeParameters.Auction4Reputation.gas,
-        config.schemeParameters.Auction4Reputation.gasPrice) as ILock4ReputationContract).address);
+    lockingEth4Reputation = await LockingEth4ReputationFactory.at(contract.address);
+  }
+
+  let lockingToken4Reputation: ILock4ReputationContract;
+
+  if (config.schemeParameters.LockingToken4Reputation.address) {
+    lockingToken4Reputation = await LockingToken4ReputationFactory.at(config.schemeParameters.LockingToken4Reputation.address);
+    console.log(`using LockingToken4Reputation at ${config.schemeParameters.LockingToken4Reputation.address}`);
+  } else {
+    const contract = await contractNew(web3, networkName,
+      { name: 'LockingToken4Reputation' },
+      config.schemeParameters.LockingToken4Reputation.gas,
+      config.schemeParameters.LockingToken4Reputation.gasPrice);
+
+    Common.setTruffleTimeout(contract, 0);
+
+    lockingToken4Reputation = await LockingToken4ReputationFactory.at(contract.address);
+  }
+
+  let externalLocking4Reputation: ILock4ReputationContract;
+
+  if (config.schemeParameters.ExternalLocking4Reputation.address) {
+    externalLocking4Reputation = await ExternalLocking4ReputationFactory.at(config.schemeParameters.ExternalLocking4Reputation.address);
+    console.log(`using ExternalLocking4Reputation at ${config.schemeParameters.ExternalLocking4Reputation.address}`);
+  } else {
+    const contract = await contractNew(web3, networkName,
+      { name: 'ExternalLocking4Reputation' },
+      config.schemeParameters.ExternalLocking4Reputation.gas,
+      config.schemeParameters.ExternalLocking4Reputation.gasPrice);
+
+    Common.setTruffleTimeout(contract, 0);
+
+    externalLocking4Reputation = await ExternalLocking4ReputationFactory.at(contract.address);
+  }
+
+  let auction4Reputation: ILock4ReputationContract;
+
+  if (config.schemeParameters.Auction4Reputation.address) {
+    auction4Reputation = await Auction4ReputationFactory.at(config.schemeParameters.Auction4Reputation.address);
+    console.log(`using Auction4Reputation at ${config.schemeParameters.Auction4Reputation.address}`);
+  } else {
+    const contract = await contractNew(web3, networkName,
+      { name: 'Auction4Reputation' },
+      config.schemeParameters.Auction4Reputation.gas,
+      config.schemeParameters.Auction4Reputation.gasPrice);
+
+    Common.setTruffleTimeout(contract, 0);
+
+    auction4Reputation = await Auction4ReputationFactory.at(contract.address);
+  }
 
   /**
    * Arc.js gets GEN addresses from the DAOstack migration repo
@@ -84,11 +136,20 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
     priceOracleAddress = priceOracleMock.address;
 
+    if (networkName !== 'Ganache') {
+      await Common.sleep(4000);
+    }
+
     for (const tokenSpec of mockConfig.tokens) {
       const address = tokenSpec.address === 'GEN' ? genTokenAddress : tokenSpec.address;
-      await priceOracleMock.setTokenPrice(address, tokenSpec.numerator, tokenSpec.denominator);
+      if (!address) {
+        console.warn(`warning: token address not found`);
+      } else {
+        priceOracleMock.setTokenPrice(address, tokenSpec.numerator, tokenSpec.denominator);
+      }
     }
   } else {
+    console.log(`using priceOracleAddress at ${priceOracleConfig.address}`);
     priceOracleAddress = priceOracleConfig.address;
   }
 
@@ -111,6 +172,10 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
     externalLockerAddress = externalLockerMock.address;
 
+    if (networkName !== 'Ganache') {
+      await Common.sleep(4000);
+    }
+
     for (const lockSpec of mockConfig.locks) {
       let address: Address;
       if (typeof lockSpec.account === 'number') {
@@ -118,9 +183,14 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
       } else {
         address = lockSpec.account;
       }
-      await externalLockerMock.lock(web3.toWei(lockSpec.amount), address);
+      if (!address) {
+        console.warn(`warning: account address not found`);
+      } else {
+        externalLockerMock.lock(web3.toWei(lockSpec.amount), address);
+      }
     }
   } else {
+    console.log(`using externalLockerAddress at ${externalLockerConfig.address}`);
     externalLockerAddress = externalLockerConfig.address;
   }
 
@@ -128,6 +198,42 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
    * Create the DAO
    */
   const daoConfig = config.daoConfig;
+
+  const gpAddress = Utils.getDeployedAddress('GenesisProtocol');
+
+  const crWrapper = WrapperService.wrappers.ContributionReward;
+
+  const crParamsHash = (await crWrapper.setParameters({
+    voteParametersHash: '0x3fb8bf97a9a9ea15a37fd0ec72555a3b89c06cf19f92705138749e427312c294',
+    votingMachineAddress: gpAddress,
+  })).result;
+
+  console.log(`ContributionReward:`);
+  console.log(`  address: ${crWrapper.address}`);
+  console.log(`  params hash: ${crParamsHash}`);
+
+  const srWrapper = WrapperService.wrappers.SchemeRegistrar;
+
+  const srParamsHash = (await srWrapper.setParameters({
+    voteParametersHash: '0x89b69e45bb80e1f1250c5226ccc5873ea4d6edc5ec9277a14fa68c4ab1837cc9',
+    votingMachineAddress: gpAddress,
+  })).result;
+
+  console.log(`SchemeRegistrar:`);
+  console.log(`  address: ${srWrapper.address}`);
+  console.log(`  params hash: ${srParamsHash}`);
+
+  const gsWrapper = WrapperService.wrappers.GenericScheme;
+
+  const gsParamsHash = (await gsWrapper.setParameters({
+    contractToCall: '0x0',
+    voteParametersHash: '0x1e25ee128c360531fceac94dae151b70f629a0728e40af1da05f3660d2324b48',
+    votingMachineAddress: gpAddress,
+  })).result;
+
+  console.log(`GenericScheme:`);
+  console.log(`  address: ${gsWrapper.address}`);
+  console.log(`  params hash: ${gsParamsHash}`);
 
   daoConfig.schemes = [...(daoConfig.schemes || []), ...
     [
@@ -147,8 +253,31 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
         address: auction4Reputation.address,
         name: 'Auction4Reputation',
       },
+      {
+        address: crWrapper.address,
+        parametersHash: crParamsHash,
+        permissions: crWrapper.getDefaultPermissions(),
+      },
+      {
+        address: srWrapper.address,
+        parametersHash: srParamsHash,
+        permissions: crWrapper.getDefaultPermissions(),
+      },
+      {
+        address: gsWrapper.address,
+        parametersHash: gsParamsHash,
+        permissions: crWrapper.getDefaultPermissions(),
+      },
     ]];
 
+  // tslint:disable-next-line: no-bitwise
+  LoggingService.logLevel = LogLevel.error | LogLevel.info;
+
+  /**
+   * NOTE: current there is an issue on mainnet where the estimated gasPrice doesn't
+   * seem to be enough to get past forgeOrg in a timely manner and the process
+   * seems to hang waiting for success.
+   */
   const dao = (await daoCreate(web3, networkName, daoConfig, 'true')) as DAO;
 
   /**********************
@@ -166,13 +295,20 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
    !!!! Should be an amount that yields a whole number when multiplied by any of the ratios below
    **********************/
   const TOTAL_REP_REWARD = config.totalRepReward;
-  const AUCTION_PERIOD = ((LOCKING_PERIOD_END_DATE.getTime() - LOCK_PERIOD_START_DATE.getTime()) / NUM_AUCTIONS) / 1000;
-  const REDEEM_ENABLE_DATE = LOCKING_PERIOD_END_DATE;
+  /**********************
+   !!!! This is a hack, just for this script, that computes the length of a auction
+   period given the length of the globally-set contract periods.  We add a millisecond to the
+   end date because the period is treated as *inclusive* of this.  (Assumes the enddate is given like
+   2019-04-14T23:59:59.999+0200).
+   **********************/
+  const AUCTION_PERIOD = (((LOCKING_PERIOD_END_DATE.getTime() + 1) - LOCK_PERIOD_START_DATE.getTime()) / NUM_AUCTIONS) / 1000;
+  const REDEEM_ENABLE_DATE = new Date(LOCKING_PERIOD_END_DATE.getTime() + 1);
 
   let schemeConfig = config.schemeParameters.LockingEth4Reputation;
 
   await lockingEth4Reputation.initialize(
     {
+      agreementHash: '0x0',
       avatarAddress: dao.avatar.address,
       lockingEndTime: LOCKING_PERIOD_END_DATE,
       lockingStartTime: LOCK_PERIOD_START_DATE,
@@ -186,6 +322,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
   await externalLocking4Reputation.initialize(
     {
+      agreementHash: '0x0',
       avatarAddress: dao.avatar.address,
       externalLockingContract: externalLockerAddress,
       getBalanceFuncSignature: 'lockedTokenBalances(address)',
@@ -200,6 +337,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
   await lockingToken4Reputation.initialize(
     {
+      agreementHash: '0x0',
       avatarAddress: dao.avatar.address,
       lockingEndTime: LOCKING_PERIOD_END_DATE,
       lockingStartTime: LOCK_PERIOD_START_DATE,
@@ -214,6 +352,7 @@ export const run = async (web3: Web3, networkName: string, configPath: string): 
 
   await auction4Reputation.initialize(
     {
+      agreementHash: '0x0',
       auctionPeriod: AUCTION_PERIOD,
       auctionsStartTime: LOCK_PERIOD_START_DATE,
       avatarAddress: dao.avatar.address,

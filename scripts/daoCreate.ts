@@ -5,7 +5,8 @@ import {
   LoggingService,
   LogLevel,
   Utils,
-  Web3
+  Web3,
+  WrapperService
 } from '@daostack/arc.js';
 import { Common } from './common';
 
@@ -44,9 +45,11 @@ export const run = async (
   }
 
   // tslint:disable-next-line: no-bitwise
-  LoggingService.logLevel = LogLevel.info | LogLevel.error;
+  LoggingService.logLevel = LoggingService.logLevel | LogLevel.info | LogLevel.error;
 
-  await InitializeArcJs();
+  if (!WrapperService.wrappers.DaoCreator) {
+    await InitializeArcJs();
+  }
   ConfigService.set('estimateGas', true);
 
   const spec = Common.isTruthy(isRawJson) ? jsonSpecPath : require(jsonSpecPath as string);

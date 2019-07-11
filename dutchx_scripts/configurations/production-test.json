@@ -12,38 +12,38 @@
       }
     ]
   },
-  "lockingPeriodStartDate":     "2019-02-18T12:00:00.000+0200",
-  "lockingPeriodEndDate":       "2019-03-20T12:00:00.000+0200",
-  "lockingPeriodStartDateMgn":  "2019-03-20T11:00:00.000+0200",
-  "lockingPeriodEndDateMgn":    "2019-03-20T12:00:00.000+0200",
+  "lockingPeriodStartDate":     "2019-05-02T00:00:00.000+0000",
+  "lockingPeriodEndDate":       "2019-08-02T00:00:00.000+0000",
+  "lockingPeriodStartDateMgn":  "2019-05-02T00:00:00.000+0000",
+  "lockingPeriodEndDateMgn":    "2019-08-02T00:00:00.000+0000",
   "totalRepReward": 1000000,
   "estimateGas": true,
   "schemeParameters": {
     "LockingEth4Reputation": {
-      "gas": "something better than max?",
+      "gas": 6100000,
       "gasPrice": "estimate",
       "lockingRatio": 0.08,
       "maxLockingPeriod": 31536000
     },
     "LockingToken4Reputation": {
-      "gas": "something better than max?",
+      "gas": 6100000,
       "gasPrice": "estimate",
       "lockingRatio": 0.3,
       "maxLockingPeriod": 31536000,
       "priceOracle": {
-        "address": "????"
-        }
+        "address": "0xcCACA999bE06dF2Dd72b15F5827c1A329A5B5F59"
+      }
     },
     "ExternalLocking4Reputation": {
-      "gas": "something better than max?",
+      "gas": 6100000,
       "gasPrice": "estimate",
       "lockingRatio": 0.5,
       "externalLocker": {
-        "address": "????"
-        }
+        "address": "0x542aD3D8EDa5705ffDad1bd8557518769fdb3cB0"
+      }
     },
     "Auction4Reputation": {
-      "gas": "something better than max?",
+      "gas": 6100000,
       "gasPrice": "estimate",
       "lockingRatio": 0.1,
       "numAuctions": 10

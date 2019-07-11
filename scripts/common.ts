@@ -2,6 +2,16 @@ import { promisify } from 'es6-promisify';
 
 export class Common {
 
+  /**
+   * The number in millseconds that truffle waits to return a mined transaction,
+   * where 0 means no timeout and `undefined` (absent) means use truffle's default value.
+   * @param contract
+   */
+  public static setTruffleTimeout(contract: any, msTimeout?: number): void {
+    // number in milliseconds where 0 means no timeout
+    contract.constructor.synchronization_timeout = msTimeout;
+  }
+
   public static sleep(milliseconds: number): Promise<any> {
     return new Promise((resolve: () => void): any => setTimeout(resolve, milliseconds));
   }
